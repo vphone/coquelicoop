@@ -8,8 +8,14 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@chenfengyuan/vue-barcode": "^2.0.2",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "jsbarcode": "^3.11.6",
+    "sass": "^1.74.1",
+    "sass-loader": "^14.1.1",
+    "simple-keyboard": "^3.7.73",
+    "vue": "^3.2.13",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
