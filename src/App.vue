@@ -1,22 +1,37 @@
 <template>
-  <img alt="Coquelicoop logo" src="./assets/logo.png" />
-  <div>
-    <button @click="displayBulkProducts">PRODUIT EN VRAC</button>
-    <SearchForm @loading="loading" />
-  </div>
-  <ProductsList v-if="typeof isLoading !== 'undefined' && !isLoading" />
-  <div v-else-if="isLoading">chargement en cours</div>
+  <q-layout view="lHh Lpr lFf">
+    <q-header elevated class="glossy">
+      <div class="row">
+        <img alt="Coquelicoop logo" src="./assets/logo.png" style="width: 200px" />
+        <q-btn
+          color="white"
+          text-color="black"
+          label="PRODUIT EN VRAC"
+          @click="displayBulkProducts"
+        />
+        <SearchForm @loading="loading" />
+        <ScaleWeight />
+      </div>
+    </q-header>
+
+    <q-page-container>
+      <ProductsList v-if="typeof isLoading !== 'undefined' && !isLoading" />
+      <div v-else-if="isLoading">chargement en cours</div>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
 import ProductsList from './components/ProductsList.vue'
 import SearchForm from './components/SearchForm.vue'
+import ScaleWeight from './components/ScaleWeight.vue'
 
 export default {
   name: 'App',
   components: {
     ProductsList,
     SearchForm,
+    ScaleWeight,
   },
   data() {
     return {
@@ -41,11 +56,5 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

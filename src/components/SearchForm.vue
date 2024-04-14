@@ -1,6 +1,6 @@
 <template>
   <div class="search">
-    <label for="keyword">Nom du produit </label>
+    <label for="keyword" class="text-body1">Nom du produit </label>
     <input
       type="text"
       id="keyword"
@@ -15,10 +15,9 @@
     />
 
 <Teleport to="body">
-  <div v-if="open" class="modal">
-    <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="keyword" />
-    <input type="button" class="button" value="Search" @click="searchKeyword" :disabled="!keyword"/>
-    <button @click="open = false">Fermer</button>
+  <div v-if="open" class="modal row q-pa-lg">
+    <SimpleKeyboard class=".shadow-24" @onChange="onChange" @onKeyPress="onKeyPress" :input="keyword" />
+    <q-btn color="white" text-color="black" label="FERMER" @click="open = false"/>
   </div>
 </Teleport>
     
@@ -49,8 +48,11 @@ export default {
     onChange(input) {
       this.keyword = input
     },
-    onKeyPress(button) {
+    async onKeyPress(button) {
       console.log('button', button)
+      if (button === '{ent}' && this.keyword) {
+        await this.searchKeyword()
+      }
     },
     onInputChange(input) {
       this.keyword = input.target.value
@@ -61,30 +63,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 .simple-keyboard {
   max-width: 850px;
+  text-align:center
 }
 .modal {
   position: fixed;
   z-index: 999;
   bottom: 10%;
-  left: 10%;
   width: 100%;
-  margin-left: 0px;
 }
 </style>

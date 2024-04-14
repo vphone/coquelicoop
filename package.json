@@ -9,10 +9,13 @@
   },
   "dependencies": {
     "@chenfengyuan/vue-barcode": "^2.0.2",
+    "@quasar/extras": "^1.0.0",
     "core-js": "^3.8.3",
     "jsbarcode": "^3.11.6",
+    "jspdf": "^2.5.1",
+    "quasar": "^2.0.0",
     "sass": "^1.74.1",
-    "sass-loader": "^14.1.1",
+    "sass-loader": "^14.2.0",
     "simple-keyboard": "^3.7.73",
     "vue": "^3.2.13",
     "vuex": "^4.0.2"
@@ -24,7 +27,9 @@
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3"
+    "eslint-plugin-vue": "^8.0.3",
+    "vue-cli-plugin-quasar": "~5.0.2",
+    "webpack": "^5.91.0"
   },
   "eslintConfig": {
     "root": true,

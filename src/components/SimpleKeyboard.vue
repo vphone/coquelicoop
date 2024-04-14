@@ -42,7 +42,7 @@ export default {
       },
       display: {
         '{numbers}': '123',
-        '{ent}': 'return',
+        '{ent}': 'RECHERCHER',
         '{backspace}': '⌫',
         '{shift}': '⇧',
         '{abc}': 'ABC',
