@@ -53,10 +53,10 @@ export const store = new Vuex.Store({
         console.log('ERROR', err)
       }
     },
-    async setProductWeight({ commit }, weight) {
+    setProductWeight({ commit }, weight) {
       commit('setProductWeight', weight)
     },
-    async setJarWeight({ commit }, weight) {
+    setJarWeight({ commit }, weight) {
       commit('setJarWeight', weight)
     },
   },

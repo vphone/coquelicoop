@@ -41,3 +41,13 @@ function transformSku(sku) {
   }
   return sku
 }
+
+export function formatPoids (p) {
+  if (!p) return '0'
+  if (p < 1000) {
+    return p.toString() + 'g'
+  }
+  const kg = Math.floor(p / 1000)
+  const g = Math.round(p % 1000)
+  return kg + ',' + ((g < 10 ? '00' : (g < 100 ? '0' : '')) + g) + 'Kg'
+}

@@ -55,6 +55,7 @@ export default {
 </script>
 
 <style>
-#app {
+body {
+  background-color: white;
 }
 </style>
