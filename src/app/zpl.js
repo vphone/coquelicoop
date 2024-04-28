@@ -139,5 +139,7 @@ export async function etiquette(pese, article, poidsB, poidsC, ean) {
     return print(p, process.env.VUE_APP_PRINTER)
   } catch (err) {
     console.log('ERR PRINT ZPL', err)
+    throw new Error(err)
+
   }
 }

@@ -1,10 +1,10 @@
 <template>
   <div class="col-2 q-px-md">
-    <q-card class="my-card" @click="printZPL">
+    <q-card class="my-card" @click="printPDF">
       <q-img :src="product.image" spinner-color="white">
-        <div class="absolute-bottom text-body1">{{ product.price }} €</div>
+        <div class="absolute-bottom text-body1 text-weight-bold">{{ product.price }} €</div>
       </q-img>
-      <q-card-section>
+      <q-card-section class="text-body1">
         {{ product.label }}
       </q-card-section>
     </q-card>
@@ -26,7 +26,6 @@ export default {
     return {
       open: true,
       canvas: null,
-      hasError: false,
       errorMessage: '',
     }
   },
@@ -40,7 +39,7 @@ export default {
   },
   methods: {
     generateWeightBarcode() {
-      const code = createWeightBarcode(this.product.id, this.productWeight / 1000)
+      const code = createWeightBarcode(this.product.ref, this.productWeight / 1000)
       return code
     },
     generateBarcodeImage(code) {
@@ -81,14 +80,21 @@ export default {
       return URL.createObjectURL(blob)
     },
     async printPDF() {
+      if (this.productWeight === 0) {
+        this.displayErrorMessage()
+        return
+      }
       const code = this.generateWeightBarcode()
       this.barcodeImage = this.generateBarcodeImage(code)
       await this.$nextTick()
       const url = this.generatePDF(this.barcodeImage)
       window.open(url)
     },
-
     async printZPL() {
+      if (this.productWeight === 0) {
+        this.displayErrorMessage()
+        return
+      }
       const article = {
         nom1: this.product.label,
         nom2: this.product.ref,
@@ -97,19 +103,7 @@ export default {
       }
       const code = createWeightBarcode(this.product.id, this.productWeight / 1000)
       try {
-        let err = await etiquette(true, article, this.productWeight, this.jarWeight, code)
-        if (err) {
-          if (err === '99999') {
-            this.errorMessage =
-              "Le poids a été mal récupéré. Repeser le produit, l'enlever du plateau et recommencer."
-          } else {
-            this.errorMessage =
-              "L'impression de l'étiquette a échoué (problème 'imprimante)\nAppeler le coordonnateur.\n" +
-              err
-          }
-          this.hasError = true
-          console.log('ERR : ' + err)
-        }
+        await etiquette(true, article, this.productWeight, this.jarWeight, code)
       } catch (err) {
         if (err === '99999') {
           this.errorMessage =
@@ -119,13 +113,24 @@ export default {
             "L'impression de l'étiquette a échoué (problème 'imprimante)\nAppeler le coordonnateur.\n" +
             err
         }
-        this.hasError = true
-        console.log(err.message)
+        this.displayErrorMessage(this.errorMessage)
       }
+    },
+    displayErrorMessage(err) {
+      this.$q.notify({
+        message:  err || `Il n'y a pas de poids`,
+        color: 'primary',
+        actions: [{ icon: 'close', color: 'white', round: true, handler: () => {} }],
+      })
     },
   },
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.q-card__section--vert,
+.q-img__content > div {
+  padding: 8px;
+}
+</style>

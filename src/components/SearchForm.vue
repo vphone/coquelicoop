@@ -1,26 +1,18 @@
 <template>
-  <div class="search">
-    <label for="keyword" class="text-body1">Nom du produit </label>
-    <input
+  <div class="search column">
+    <label for="keyword" class="text-subtitle1 col">Nom du produit </label>
+    <q-input
+      filled
       type="text"
       id="keyword"
       name="keyword"
-      class="input"
+      class="input text-h5 col"
       v-model="keyword"
       required
       minlength="1"
-      @input="onInputChange"
-      placeholder="Tapper ici"
-      @click="open = true"
+      placeholder=""
     />
-
-<Teleport to="body">
-  <div v-if="open" class="modal row q-pa-lg">
-    <SimpleKeyboard class=".shadow-24" @onChange="onChange" @onKeyPress="onKeyPress" :input="keyword" />
-    <q-btn color="white" text-color="black" label="FERMER" @click="open = false"/>
-  </div>
-</Teleport>
-    
+    <SimpleKeyboard class="col" @onChange="onChange" @onKeyPress="onKeyPress" :input="keyword" />
   </div>
 </template>
 
@@ -34,13 +26,11 @@ export default {
   },
   data() {
     return {
-      open:false,
       keyword: null,
     }
   },
   methods: {
     async searchKeyword() {
-      this.open = false
       this.$emit('loading', true)
       await this.$store.dispatch('setProducts', this.keyword)
       this.$emit('loading', false)
@@ -52,10 +42,8 @@ export default {
       console.log('button', button)
       if (button === '{ent}' && this.keyword) {
         await this.searchKeyword()
+        this.keyword = ''
       }
-    },
-    onInputChange(input) {
-      this.keyword = input.target.value
     },
   },
 }
@@ -63,14 +51,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.simple-keyboard {
-  max-width: 850px;
-  text-align:center
-}
-.modal {
-  position: fixed;
-  z-index: 999;
-  bottom: 10%;
-  width: 100%;
+.search {
+  .q-field__input {
+    color: white;
+  }
 }
 </style>

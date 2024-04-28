@@ -1,8 +1,9 @@
 <template>
-  <div class="q-px-xl q-pt-xl">
-    <div class="row">
+  <div class="q-px-lg q-pt-lg">
+    <div class="row" v-if="productsLength > 0">
       <ProductItem v-for="product in products" :key="product.id" :product="product" />
     </div>
+    <div>pas de résultat</div>
   </div>
 </template>
 
@@ -19,6 +20,9 @@ export default {
         return this.$store.state.products['vrac'] || []
       }
       return this.$store.state.products[this.$store.state.keyword] || []
+    },
+    productsLength() {
+      return this.products.length
     },
     isBulk() {
       return this.$store.state.isBulk

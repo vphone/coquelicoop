@@ -1,22 +1,35 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="glossy">
-      <div class="row">
-        <img alt="Coquelicoop logo" src="./assets/logo.png" style="width: 200px" />
+    <q-header elevated class="row">
+      <div class="column col-2">
+      <q-img
+        src="./assets/logo.png"
+
+        spinner-color="white"
+        style="height: 80px; max-width: 200px"
+      />
+      <q-btn class="text-h5 q-mt-xl" color="white" text-color="black" label="RAZ" @click="raz" />
+      </div>
+      <div class="column col-4 q-pa-md">
         <q-btn
+          class="text-h6 col"
           color="white"
           text-color="black"
-          label="PRODUIT EN VRAC"
+          label="LE VRAC"
           @click="displayBulkProducts"
         />
+        <ScaleWeight class="col-8" />
+      </div>
+      <div class="col-6 q-pa-md">
         <SearchForm @loading="loading" />
-        <ScaleWeight />
       </div>
     </q-header>
 
     <q-page-container>
       <ProductsList v-if="typeof isLoading !== 'undefined' && !isLoading" />
-      <div v-else-if="isLoading">chargement en cours</div>
+      <div v-else-if="isLoading" class="fullscreen">
+        <q-spinner class="fixed-center" color="primary" size="4em" />
+      </div>
     </q-page-container>
   </q-layout>
 </template>
@@ -44,6 +57,11 @@ export default {
     },
     async displayBulkProducts() {
       await this.$store.dispatch('setBulkProducts')
+    },
+    raz() {
+      this.$store.dispatch('setTotalWeight', 0)
+      this.$store.dispatch('setProductWeight', 0)
+      this.$store.dispatch('setJarWeight', 0)
     },
   },
   async mounted() {

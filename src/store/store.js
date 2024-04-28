@@ -7,8 +7,9 @@ export const store = new Vuex.Store({
     keyword: '',
     isBulk: true,
     weights: {
-      jar: 250,
-      product: 623,
+      jar: 0,
+      product: 0,
+      total: 0
     },
   },
   mutations: {
@@ -27,6 +28,9 @@ export const store = new Vuex.Store({
     setProductWeight(state, value) {
       state.weights.product = value
     },
+    setTotalWeight(state, value) {
+      state.weights.total = value
+    },
   },
   actions: {
     async setProducts({ commit, state }, keyword) {
@@ -38,6 +42,8 @@ export const store = new Vuex.Store({
           commit('setProducts', { keyword, products })
         }
       } catch (err) {
+        const products = []
+        commit('setProducts', { keyword, products})
         console.log('ERROR', err)
       }
     },
@@ -58,6 +64,12 @@ export const store = new Vuex.Store({
     },
     setJarWeight({ commit }, weight) {
       commit('setJarWeight', weight)
+    },
+    setTotalWeight({ commit }, weight) {
+      commit('setTotalWeight', weight)
+    },
+    resetSearch({ commit }) {
+      commit('setKeyword', '')
     },
   },
 })
