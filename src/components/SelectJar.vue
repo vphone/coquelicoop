@@ -58,6 +58,6 @@ export default {
 </script>
 <style scoped>
 .title {
-  border-bottom:1px solid
+  border-bottom: 1px solid grey;
 }
 </style>

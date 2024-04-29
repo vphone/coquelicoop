@@ -4,7 +4,7 @@ const headers = {
   DOLAPIKEY: process.env.VUE_APP_DOLAPIKEY,
 }
 export async function getProducts(keyword) {
-  const url = `${baseUrl}products?sortfield=t.label&sortorder=ASC&limit=10&sqlfilters=t.label:like:'%${keyword}%'`
+  const url = `${baseUrl}products?sortfield=t.label&sortorder=ASC&sqlfilters=t.label:like:'%${keyword}%'`
   const response = await fetch(url, {
     headers,
   })
@@ -12,10 +12,8 @@ export async function getProducts(keyword) {
   return await Promise.all(
     products.map(async (item) => {
       const { label, barcode, price_ttc, id, ref } = item
-
       const image = await getImage(id)
       const priceSplitted = price_ttc.split('.')
-
       const price =
         priceSplitted[0] + '.' + priceSplitted[1].split('')[0] + priceSplitted[1].split('')[1]
       return { label, barcode, price, id, image, ref }
@@ -45,7 +43,6 @@ export async function getBulkProducts() {
         image = await getImage(id)
       }
       const priceSplitted = price_ttc.split('.')
-
       const price =
         priceSplitted[0] + '.' + priceSplitted[1].split('')[0] + priceSplitted[1].split('')[1]
       return { label, barcode, price, id, ref, image }

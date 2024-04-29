@@ -1,6 +1,6 @@
 <template>
   <div class="col-2 q-px-md">
-    <q-card class="my-card" @click="printPDF">
+    <q-card class="my-card" @click="printZPL">
       <q-img :src="product.image" spinner-color="white">
         <div class="absolute-bottom text-body1 text-weight-bold">{{ product.price }} €</div>
       </q-img>
@@ -15,7 +15,7 @@
 import JsBarcode from 'jsbarcode'
 import { jsPDF } from 'jspdf'
 import { createWeightBarcode } from '../utils'
-import { etiquette } from '../app/zpl'
+import { generateBarcodeLabel } from '../app/zpl'
 
 export default {
   name: 'ProductItem',
@@ -33,13 +33,16 @@ export default {
     productWeight() {
       return this.$store.state.weights.product
     },
+    totalWeight() {
+      return this.$store.state.weights.total
+    },
     jarWeight() {
       return this.$store.state.weights.jar
     },
   },
   methods: {
     generateWeightBarcode() {
-      const code = createWeightBarcode(this.product.ref, this.productWeight / 1000)
+      const code = createWeightBarcode(this.product.ref, this.productWeight)
       return code
     },
     generateBarcodeImage(code) {
@@ -83,27 +86,34 @@ export default {
       if (this.productWeight === 0) {
         this.displayErrorMessage()
         return
+      } else if (this.totalWeight === this.jarWeight) {
+        this.displayErrorMessage('pas de poids pour le produit')
+        return
       }
       const code = this.generateWeightBarcode()
       this.barcodeImage = this.generateBarcodeImage(code)
       await this.$nextTick()
       const url = this.generatePDF(this.barcodeImage)
+      this.resetWeights()
       window.open(url)
     },
     async printZPL() {
       if (this.productWeight === 0) {
         this.displayErrorMessage()
         return
+      } else if (this.totalWeight === this.jarWeight) {
+        this.displayErrorMessage('pas de poids pour le produit')
+        return
       }
-      const article = {
-        nom1: this.product.label,
-        nom2: this.product.ref,
+      const item = {
+        label: this.product.label,
+        ref: this.product.ref,
         unite: 'kg',
-        prixN: this.product.price,
+        price: this.product.price,
       }
-      const code = createWeightBarcode(this.product.id, this.productWeight / 1000)
+      const code = this.generateWeightBarcode()
       try {
-        await etiquette(true, article, this.productWeight, this.jarWeight, code)
+        await generateBarcodeLabel(true, item, this.totalWeight, this.jarWeight, code)
       } catch (err) {
         if (err === '99999') {
           this.errorMessage =
@@ -115,10 +125,16 @@ export default {
         }
         this.displayErrorMessage(this.errorMessage)
       }
+      this.resetWeights()
+    },
+    resetWeights() {
+      this.$store.dispatch('setTotalWeight', 0)
+      this.$store.dispatch('setProductWeight', 0)
+      this.$store.dispatch('setJarWeight', 0)
     },
     displayErrorMessage(err) {
       this.$q.notify({
-        message:  err || `Il n'y a pas de poids`,
+        message: err || `Il n'y a pas de poids`,
         color: 'primary',
         actions: [{ icon: 'close', color: 'white', round: true, handler: () => {} }],
       })

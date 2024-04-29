@@ -3,7 +3,7 @@
     <div class="row" v-if="productsLength > 0">
       <ProductItem v-for="product in products" :key="product.id" :product="product" />
     </div>
-    <div>pas de résultat</div>
+    <div v-else>Pas de résultat</div>
   </div>
 </template>
 
@@ -28,10 +28,6 @@ export default {
       return this.$store.state.isBulk
     },
   },
-  data() {
-    return {}
-  },
-  async mounted() {},
 }
 </script>
 

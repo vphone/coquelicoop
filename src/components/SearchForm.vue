@@ -51,9 +51,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.search {
-  .q-field__input {
-    color: white;
-  }
+.search .q-field__input {
+  color: white;
 }
 </style>

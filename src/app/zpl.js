@@ -43,24 +43,24 @@ async function print(p, impr) {
       cmd = `COPY "${p}" "\\\\localhost\\${impr}"`
     } else {
       // pour tester en l'absence d'imprimante
-      cmd = `COPY "${p}" "C:\\tmp\\etiquette.zpl"`
+      cmd = `COPY "${p}" "C:\\tmp\\barcodelabel.zpl"`
     }
-  } else if (process.platform === 'linux') { 
+  } else if (process.platform === 'linux') {
     if (impr) {
       cmd = `lpr -l -P "${impr}" "${p}"`
     } else {
       // pour tester en l'absence d'imprimante
-      cmd = `cp "${p}" "/tmp/etiquette.zpl"`
+      cmd = `cp "${p}" "/tmp/barcodelabel.zpl"`
     }
-  } else if (process.platform === 'darwin') { 
+  } else if (process.platform === 'darwin') {
     if (impr) {
       cmd = `lp "${impr}" "${p}"`
     } else {
       // pour tester en l'absence d'imprimante
-      cmd = `cp "${p}" "/tmp/etiquette.zpl"`
+      cmd = `cp "${p}" "/tmp/barcodelabel.zpl"`
     }
   }
-  
+
   const { stdout, stderr } = await exec(cmd)
   if (stderr) {
     console.log('stdout:', stdout)
@@ -71,75 +71,78 @@ async function print(p, impr) {
   }
 }
 
-const options = { year: '2-digit', month: '2-digit', day: '2-digit' }
 /*
 Demande d'impression d'une étiquette
 pese : true si le poids est pesé, sinon saisi
-article : l'article lui-même
-poidsB : c'est soit le poids, soit le nombre de pièces
-poidsC : poids du contenant
+item : l'article lui-même
+totalWeight : c'est soit le poids, soit le nombre de pièces
+jarWeight : poids du contenant
 Le rouleau de papier est centré au milieuu de l'imprimante :
 si on écrit depuis 0 en x, on va écrire hors du rouleau à gauche dès qu'il n'a pas la taille maximale.
 La "marge à gauche" est laissée paramétrable pour s'adapter à la largeur exacte du papier
 voire des imprimantes. 220 paraît une bonne approximation pour être centré
 */
-export async function etiquette(pese, article, poidsB, poidsC, ean) {
-  console.log(pese, article, poidsB, poidsC, ean)
+export async function generateBarcodeLabel(pese, item, totalWeight, jarWeight, ean) {
+  console.log(pese, item, totalWeight, jarWeight, ean)
   try {
-    let type
-    let prix
-    let prixk
-    let poidsTare
-    let date
-    let m = 20
+    const margin = 20
+    const productWeight = jarWeight ? totalWeight - jarWeight : totalWeight
+    const {type, weightLabel} = getWeightsLabels(item.unite, pese, jarWeight, productWeight, totalWeight)
+    const {priceLabel, priceKgLabel} = getPricesLabels(item.unite, item.price, productWeight)
+    const options = { year: '2-digit', month: '2-digit', day: '2-digit' }
+    const date = new Date().toLocaleDateString('fr-FR', options).replace(/\./g, '/')
 
-    let net = poidsC ? poidsB - poidsC : poidsB
-
-    if (article.unite === 'kg') {
-      type = pese ? 'Poids Net' : 'Poids SAISI'
-      if (poidsC) type += '+Tare'
-      poidsTare = formatPoids(net) + (poidsC ? '+' + formatPoids(poidsC) : '')
-    } else {
-      type = 'Nombre de pièces'
-      poidsTare = '' + poidsB
-    }
-    if (!article.prixN) {
-      prix = '?'
-    } else {
-      if (article.unite === 'kg') {
-        prixk = ('' + article.prixN).replace('.', ',') + '€/Kg'
-        prix = ('' + Math.round((article.prixN * net) / 10) / 100).replace('.', ',') + '€'
-      } else {
-        prix = ('' + article.prixN * net).replace('.', ',') + '€'
-        prixk = ''
-      }
-    }
-    date = new Date().toLocaleDateString('fr-FR', options).replace(/\./g, '/')
     if (ean.substring(7, 12) === '99999') return '99999'
     // texte de l'étiquette en ZPL : format 50mm x 40mmm
     // eslint-disable-next-line no-eval
-    let etiq = `^XA\n^CI28\n^CF0,0,30\n^FO${m + 10},15,0^FD${article.nom1}^FS\n^FO${
-      m + 10
-    },45,0^FD${article.nom2}^FS\n^CF0,0,20\n^FO${m + 10},80,0^FD${prixk}^FS\n^FO${
-      m + 120
-    },80,0^FD${type}^FS\n^FO${m + 340},80,0^FDPesé le^FS\n^CF0,0,28\n^FO${
-      m + 10
-    },100,0^FD${prix}^FS\n^FO${m + 120},100,0^FD${poidsTare}^FS\n^CF0,0,20\n^FO${
-      m + 340
-    },100,0^FD${date}^FS\n^FO${m + 70},140^BY3,2,20^BEN,60,Y,N^FD${ean}^FS\n^XZ\n`
-    console.log(type, prix, prixk, poidsTare, m, date)
+    let text = `^XA\n^CI28\n^CF0,0,30\n^FO${margin + 10},15,0^FD${item.label}^FS\n^FO${
+      margin + 10
+    },45,0^FD${item.ref}^FS\n^CF0,0,20\n^FO${margin + 10},80,0^FD${priceKgLabel}^FS\n^FO${
+      margin + 120
+    },80,0^FD${type}^FS\n^FO${margin + 340},80,0^FDPesé le^FS\n^CF0,0,28\n^FO${
+      margin + 10
+    },100,0^FD${priceLabel}^FS\n^FO${margin + 120},100,0^FD${weightLabel}^FS\n^CF0,0,20\n^FO${
+      margin + 340
+    },100,0^FD${date}^FS\n^FO${margin + 70},140^BY3,2,20^BEN,60,Y,N^FD${ean}^FS\n^XZ\n`
 
     // path du fichier à impimer
     const dir = path.normalize('./src/app/')
-    console.log(dir)
-    let p = path.join(dir, 'etiquette.zpl')
+    let p = path.join(dir, 'barcodelabel.zpl')
     // écriture du texte en ZPL sur ce fichier
-    await write(p, etiq)
+    await write(p, text)
     // envoi à l'imprimante selon l'OS
     return print(p, process.env.VUE_APP_PRINTER)
   } catch (err) {
     console.log('ERR PRINT ZPL', err)
     throw new Error(err)
-
   }
+}
+function getWeightsLabels(unit, pese, jarWeight, productWeight, totalWeight){
+  let type
+  let weightLabel
+  if (unit === 'kg') {
+    type = pese ? 'Poids net' : 'Poids SAISI'
+    if (jarWeight) type += '+Tare'
+    weightLabel = formatPoids(productWeight) + (jarWeight ? '+' + formatPoids(jarWeight) : '')
+  } else {
+    type = 'Nombre de pièces'
+    weightLabel = totalWeight
+  }
+  return {type, weightLabel}
+}
+function getPricesLabels(unit, price, productWeight) {
+  let priceLabel
+  let priceKgLabel
+  if (!price) {
+    priceLabel = '?'
+  } else {
+    if (unit === 'kg') {
+      priceKgLabel = ('' + price).replace('.', ',') + '€/Kg'
+      priceLabel = ('' + Math.round((price * productWeight) / 10) / 100).replace('.', ',') + '€'
+    } else {
+      priceLabel = ('' + price * productWeight).replace('.', ',') + '€'
+      priceKgLabel = ''
+    }
+  }
+  return {priceLabel, priceKgLabel}
 }

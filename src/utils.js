@@ -29,7 +29,7 @@ export function createPriceBarcode(skuDigit, price) {
   return digits + keyEAN(digits)
 }
 function transformWeight(weight) {
-  let weightStr = `${weight * 1000}`
+  let weightStr = weight.toString()
   while (weightStr.length < 5) {
     weightStr = '0' + weightStr
   }
@@ -45,9 +45,7 @@ function transformSku(sku) {
 export function formatPoids (p) {
   if (!p) return '0'
   if (p < 1000) {
-    return p.toString() + 'g'
+    return `${p} g`
   }
-  const kg = Math.floor(p / 1000)
-  const g = Math.round(p % 1000)
-  return kg + ',' + ((g < 10 ? '00' : (g < 100 ? '0' : '')) + g) + 'Kg'
+  return `${p / 1000} Kg`
 }

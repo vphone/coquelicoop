@@ -8,7 +8,7 @@
         spinner-color="white"
         style="height: 80px; max-width: 200px"
       />
-      <q-btn class="text-h5 q-mt-xl" color="white" text-color="black" label="RAZ" @click="raz" />
+      <q-btn class="text-h5 q-mt-xl" color="white" text-color="black" label="RAZ" @click="resetWeights" />
       </div>
       <div class="column col-4 q-pa-md">
         <q-btn
@@ -58,7 +58,7 @@ export default {
     async displayBulkProducts() {
       await this.$store.dispatch('setBulkProducts')
     },
-    raz() {
+    resetWeights() {
       this.$store.dispatch('setTotalWeight', 0)
       this.$store.dispatch('setProductWeight', 0)
       this.$store.dispatch('setJarWeight', 0)
