@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="dialog" @hide="onDialogHide">
+  <q-dialog ref="dialog" @hide="onDialogHide" class="jars">
     <q-card class="q-dialog-plugin">
       <div class="text-h6 q-pa-lg title"> Sélectionner le contenant </div>
       <div class="jar row q-pa-lg">

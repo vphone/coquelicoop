@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="weights">
     <q-list bordered separator>
       <q-item>
         <q-item-section class="text-h6">Poids du contenant :</q-item-section>
@@ -105,6 +105,11 @@ export default {
       this.$store.dispatch('setJarWeight', 0)
     },
     displayErrorMessage(err) {
+      this.$q.notify.setDefaults({
+        position: 'bottom',
+        timeout: 6000,
+        textColor: 'white',
+      })
       this.$q.notify({
         message: err,
         color: 'primary',
@@ -125,11 +130,11 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.q-list--bordered {
+<style>
+.weights .q-list--bordered {
   border: none;
 }
-.q-field__input {
+.weights .q-field__native{
   color: white;
 }
 </style>

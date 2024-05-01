@@ -8,7 +8,8 @@ export async function getProducts(keyword) {
   const response = await fetch(url, {
     headers,
   })
-  const products = await response.json()
+  const raw = await response.json()
+  const products = raw.filter((item) => item.status === '1')
   return await Promise.all(
     products.map(async (item) => {
       const { label, barcode, price_ttc, id, ref } = item
@@ -24,17 +25,30 @@ export async function getProducts(keyword) {
 import data from '../mocks/vracs.json'
 
 export async function getBulkProducts() {
-  let products
+  let raw
   if (process.env.VUE_APP_USE_MOCKS === 'false') {
     const url = `${baseUrl}categories/71/objects?type=product`
     const response = await fetch(url, {
       headers,
     })
-    products = await response.json()
+    raw = await response.json()
   } else {
-    products = data
+    raw = data
   }
+  const products = raw.filter((item) => item.status === '1')
+  products.sort((a, b) => {
+    const nameA = a.label.toUpperCase() // ignore upper and lowercase
+    const nameB = b.label.toUpperCase() // ignore upper and lowercase
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
 
+    // names must be equal
+    return 0
+  })
   return await Promise.all(
     products.map(async (item) => {
       const { label, barcode, price_ttc, id, ref } = item
@@ -57,15 +71,19 @@ async function getImage(id) {
   })
   const document = await response.json()
   const { level1name, relativename } = document.length ? document[0] : {}
-  let image = ''
+
   if (level1name) {
-    const encoded = encodeURI(level1name + '/' + relativename)
-    const urlImage = `${baseUrl}documents/download?modulepart=product&original_file=${encoded}`
-    const responseImage = await fetch(urlImage, {
-      headers,
-    })
-    const images = await responseImage.json()
-    image = 'data:image/png;base64, ' + images.content
+    try {
+      const encoded = encodeURI(level1name + '/' + relativename)
+      const urlImage = `${baseUrl}documents/download?modulepart=product&original_file=${encoded}`
+      const responseImage = await fetch(urlImage, {
+        headers,
+      })
+      const images = await responseImage.json()
+      return 'data:image/png;base64, ' + images.content
+    } catch (err) {
+      return 'grocery-colored.png'
+    }
   }
-  return image
+  return 'grocery-colored.png'
 }
