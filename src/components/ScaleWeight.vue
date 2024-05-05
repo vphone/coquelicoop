@@ -73,7 +73,7 @@ export default {
     try {
       this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)
       await this.connectScale()
-      // await this.disconnectScale()
+      await this.disconnectScale()
       // this.displayDialog = true
     } catch (err) {
       console.log(err)
@@ -88,7 +88,6 @@ export default {
       await this.scale.debutEcoute()
     },
     getWeight(ecoute, err, weight) {
-      console.log(weight)
       if (err) {
         this.displayErrorMessage(err)
       } else if (weight === 0) {

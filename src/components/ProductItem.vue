@@ -14,9 +14,11 @@
 <script>
 import JsBarcode from 'jsbarcode'
 import { jsPDF } from 'jspdf'
-import { createWeightBarcode } from '../utils'
+import { createWeightBarcode, createPriceBarcode } from '../app/utils'
 import { generateBarcodeLabel } from '../app/zpl'
 
+const WEIGHT_SELECT = 'Au poids'
+// const PRICE_SELECT = 'PRICE_SELECT'
 export default {
   name: 'ProductItem',
   props: {
@@ -30,6 +32,9 @@ export default {
     }
   },
   computed: {
+    isAdmin() {
+      return this.$store.state.admin.status
+    },
     productWeight() {
       return this.$store.state.weights.product
     },
@@ -39,10 +44,21 @@ export default {
     jarWeight() {
       return this.$store.state.weights.jar
     },
+    adminWeight() {
+      return this.$store.state.admin.weight
+    },
+    adminNumber() {
+      return this.$store.state.admin.number
+    },
+    adminType() {
+      return this.$store.state.admin.type
+    },
   },
   methods: {
-    generateWeightBarcode() {
-      return createWeightBarcode(this.product.ref, this.productWeight)
+    generateBarcode() {
+      if (this.adminType === WEIGHT_SELECT)
+        return createWeightBarcode(this.product.ref, this.productWeight)
+      else return createPriceBarcode('12345'/*this.product.ref*/, this.product.price)
     },
     generateBarcodeImage(code) {
       if (!this.canvas) this.canvas = document.createElement('canvas')
@@ -84,7 +100,7 @@ export default {
     async printPDF() {
       this.checkWeights()
       try {
-        const code = this.generateWeightBarcode()
+        const code = this.generateBarcode()
         this.barcodeImage = this.generateBarcodeImage(code)
         await this.$nextTick()
         const url = this.generatePDF(this.barcodeImage)
@@ -95,16 +111,14 @@ export default {
       }
     },
     async printZPL() {
-      this.checkWeights()
+      let hasError = false
+      if (this.isAdmin) hasError = this.checkData()
+      else hasError = this.checkWeights()
+      if (hasError) return
       try {
-        const item = {
-          label: this.product.label,
-          ref: this.product.ref,
-          unite: 'kg',
-          price: this.product.price,
-        }
-        const code = this.generateWeightBarcode()
-        await generateBarcodeLabel(true, item, this.totalWeight, this.jarWeight, code)
+        const item = this.getItem()
+        const code = this.generateBarcode()
+        await generateBarcodeLabel( item, code)
         this.resetWeights()
       } catch (err) {
         if (err === '99999') {
@@ -120,14 +134,33 @@ export default {
       this.$store.dispatch('setProductWeight', 0)
       this.$store.dispatch('setJarWeight', 0)
     },
+    checkData() {
+      let hasError = false
+      if (this.adminNumber === 0) {
+        this.displayErrorMessage('Veuillez indiquer le nombre')
+        hasError = true
+      }
+      if (this.adminWeight === 0) {
+        this.displayErrorMessage('Veuillez indiquer le poids')
+        hasError = true
+      }
+      if (this.adminType === null) {
+        this.displayErrorMessage("Veuillez indiquer au poids ou à l'unité")
+        hasError = true
+      }
+      return hasError
+    },
     checkWeights() {
+      let hasError = false
       if (this.productWeight === 0) {
         this.displayErrorMessage()
-        return
-      } else if (this.totalWeight === this.jarWeight) {
-        this.displayErrorMessage('Le poids du contenant et brut sont identiques')
-        return
+        hasError = true
       }
+      if (this.totalWeight === this.jarWeight) {
+        this.displayErrorMessage('Le poids du contenant et brut sont identiques')
+        hasError = true
+      }
+      return hasError
     },
     displayErrorMessage(err) {
       this.$q.notify.setDefaults({
@@ -141,6 +174,30 @@ export default {
         actions: [{ icon: 'close', color: 'white', round: true, handler: () => {} }],
       })
     },
+    getItem() {
+      let item
+      // etiquette au poids
+      if (this.adminType === WEIGHT_SELECT || !this.isAdmin) {
+        item = {
+          label: this.product.label,
+          ref: this.product.ref,
+          unite: 'kg',
+          price: this.product.price,
+          totalWeight: this.totalWeight,
+          jarWeight: this.jarWeight
+        }
+      } else {
+        // etiquette au prix
+        item = {
+          label: this.product.label,
+          ref: this.product.ref,
+          unite: '',
+          price: this.product.price,
+          totalWeight: this.adminWeight,
+        }
+      }
+      return item
+    },
   },
 }
 </script>
@@ -152,6 +209,6 @@ export default {
   padding: 8px;
 }
 .product .image img {
-  padding:18px;
+  padding: 18px;
 }
 </style>

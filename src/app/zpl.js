@@ -2,7 +2,7 @@
 Génération du texte de l'étiquette en langage ZPL
 */
 
-import { formatPoids } from '../utils'
+import { formatPoids } from './utils'
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 const fs = require('fs')
@@ -73,7 +73,6 @@ async function print(p, impr) {
 
 /*
 Demande d'impression d'une étiquette
-pese : true si le poids est pesé, sinon saisi
 item : l'article lui-même
 totalWeight : c'est soit le poids, soit le nombre de pièces
 jarWeight : poids du contenant
@@ -82,13 +81,14 @@ si on écrit depuis 0 en x, on va écrire hors du rouleau à gauche dès qu'il n
 La "marge à gauche" est laissée paramétrable pour s'adapter à la largeur exacte du papier
 voire des imprimantes. 220 paraît une bonne approximation pour être centré
 */
-export async function generateBarcodeLabel(pese, item, totalWeight, jarWeight, ean) {
-  console.log(pese, item, totalWeight, jarWeight, ean)
+export async function generateBarcodeLabel( item, ean) {
+  console.log( item, ean)
   try {
     const margin = 20
-    const productWeight = jarWeight ? totalWeight - jarWeight : totalWeight
-    const {type, weightLabel} = getWeightsLabels(item.unite, pese, jarWeight, productWeight, totalWeight)
+    const productWeight = item.jarWeight ? item.totalWeight - item.jarWeight : item.totalWeight
+    const {type, weightLabel} = getWeightsLabels(item.unite, item.jarWeight, productWeight, item.totalWeight)
     const {priceLabel, priceKgLabel} = getPricesLabels(item.unite, item.price, productWeight)
+
     const options = { year: '2-digit', month: '2-digit', day: '2-digit' }
     const date = new Date().toLocaleDateString('fr-FR', options).replace(/\./g, '/')
 
@@ -117,15 +117,15 @@ export async function generateBarcodeLabel(pese, item, totalWeight, jarWeight, e
     throw new Error(err)
   }
 }
-function getWeightsLabels(unit, pese, jarWeight, productWeight, totalWeight){
+function getWeightsLabels(unit, jarWeight, productWeight, totalWeight){
   let type
   let weightLabel
   if (unit === 'kg') {
-    type = pese ? 'Poids net' : 'Poids SAISI'
+    type = 'Poids net'
     if (jarWeight) type += '+Tare'
     weightLabel = formatPoids(productWeight) + (jarWeight ? '+' + formatPoids(jarWeight) : '')
   } else {
-    type = 'Nombre de pièces'
+    type = 'Poids SAISI'
     weightLabel = totalWeight
   }
   return {type, weightLabel}
@@ -140,8 +140,8 @@ function getPricesLabels(unit, price, productWeight) {
       priceKgLabel = ('' + price).replace('.', ',') + '€/Kg'
       priceLabel = ('' + Math.round((price * productWeight) / 10) / 100).replace('.', ',') + '€'
     } else {
-      priceLabel = ('' + price * productWeight).replace('.', ',') + '€'
-      priceKgLabel = ''
+      priceLabel = ('' + price ).replace('.', ',') + '€'
+      priceKgLabel = ('' + Math.round((price * productWeight) / 10) / 100).replace('.', ',') + '€/Kg'
     }
   }
   return {priceLabel, priceKgLabel}
