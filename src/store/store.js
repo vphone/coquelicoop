@@ -11,6 +11,12 @@ export const store = new Vuex.Store({
       product: 0,
       total: 0
     },
+    admin: {
+      status: false,
+      number: 0,
+      weight: 0,
+      type: null
+    }
   },
   mutations: {
     setProducts(state, { keyword, products }) {
@@ -30,6 +36,18 @@ export const store = new Vuex.Store({
     },
     setTotalWeight(state, value) {
       state.weights.total = value
+    },
+    setAdminWeight(state, value) {
+      state.admin.weight = value
+    },
+    setAdminNumber(state, value) {
+      state.admin.number = value
+    },
+    setAdminType(state, value) {
+      state.admin.type = value
+    },
+    setIsAdmin(state, value) {
+      state.admin.status = value
     },
   },
   actions: {
@@ -70,6 +88,18 @@ export const store = new Vuex.Store({
     },
     resetSearch({ commit }) {
       commit('setKeyword', '')
+    },
+    setAdminWeight({ commit }, weight) {
+      commit('setAdminWeight', weight)
+    },
+    setAdminNumber({ commit }, value) {
+      commit('setAdminNumber', value)
+    },
+    setAdminType({ commit }, value) {
+      commit('setAdminType', value)
+    },
+    setIsAdmin({ commit }, value) {
+      commit('setIsAdmin', value)
     },
   },
 })

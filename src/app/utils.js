@@ -25,7 +25,7 @@ export function createWeightBarcode(skuDigit, weight) {
 }
 export function createPriceBarcode(skuDigit, price) {
   const firstTwoDigits = '21'
-  const digits = firstTwoDigits + transformSku(skuDigit) + price
+  const digits = firstTwoDigits + transformSku(skuDigit) + transformPrice(price)
   return digits + keyEAN(digits)
 }
 function transformWeight(weight) {
@@ -34,6 +34,13 @@ function transformWeight(weight) {
     weightStr = '0' + weightStr
   }
   return weightStr
+}
+function transformPrice(price) {
+  let priceStr = price.toString().replace('.','')
+  while (priceStr.length < 5) {
+    priceStr = '0' + priceStr
+  }
+  return priceStr
 }
 function transformSku(sku) {
   while (sku.length < 5) {
