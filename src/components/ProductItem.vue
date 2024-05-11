@@ -58,7 +58,7 @@ export default {
     generateBarcode() {
       if (this.adminType === WEIGHT_SELECT)
         return createWeightBarcode(this.product.ref, this.productWeight)
-      else return createPriceBarcode('12345'/*this.product.ref*/, this.product.price)
+      else return createPriceBarcode(this.product.ref, this.product.price)
     },
     generateBarcodeImage(code) {
       if (!this.canvas) this.canvas = document.createElement('canvas')
@@ -118,8 +118,9 @@ export default {
       try {
         const item = this.getItem()
         const code = this.generateBarcode()
-        await generateBarcodeLabel( item, code)
-        this.resetWeights()
+        await generateBarcodeLabel(item, code)
+        if (this.isAdmin) this.resetSelections()
+        else this.resetWeights()
       } catch (err) {
         if (err === '99999') {
           this.errorMessage = `Le poids a été mal récupéré. Repeser le produit, l'enlever du plateau et recommencer`
@@ -128,6 +129,11 @@ export default {
         }
         this.displayErrorMessage(this.errorMessage)
       }
+    },
+    resetSelections() {
+      this.$store.dispatch('setAdminType', null)
+      this.$store.dispatch('setAdminNumber', 0)
+      this.$store.dispatch('setAdminWeight', 0)
     },
     resetWeights() {
       this.$store.dispatch('setTotalWeight', 0)
@@ -140,7 +146,7 @@ export default {
         this.displayErrorMessage('Veuillez indiquer le nombre')
         hasError = true
       }
-      if (this.adminWeight === 0) {
+      if (this.adminWeight === 0 && this.adminType === WEIGHT_SELECT) {
         this.displayErrorMessage('Veuillez indiquer le poids')
         hasError = true
       }
@@ -184,7 +190,7 @@ export default {
           unite: 'kg',
           price: this.product.price,
           totalWeight: this.totalWeight,
-          jarWeight: this.jarWeight
+          jarWeight: this.jarWeight,
         }
       } else {
         // etiquette au prix

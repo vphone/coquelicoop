@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import SimpleKeyboard from './SimpleKeyboard'
+import SimpleKeyboard from './keyboard/SimpleKeyboard'
 
 export default {
   name: 'SearchForm',

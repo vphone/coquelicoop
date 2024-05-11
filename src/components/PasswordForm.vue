@@ -1,8 +1,9 @@
 <template>
-  <div class="">
+  <div>
     <q-toggle v-model="toogleAdmin" label="Admin" @click="displayPasswordDialog" />
     <q-dialog ref="dialogKeyboard" @hide="onDialogHide" class="">
       <q-card class="q-dialog-plugin">
+        <div class="text-h6 q-px-md q-py-sm">Saissez le code pour accéder à l'espace admin</div>
         <q-input
           filled
           :type="isPassword ? 'password' : 'text'"
@@ -22,7 +23,7 @@
           </template>
         </q-input>
         <NumberKeyboard
-          keyboardClass="login"
+          keyboardClass="password-keyboard"
           @onChange="onChange"
           @onKeyPress="onKeyPress"
           :input="password"
@@ -33,9 +34,9 @@
 </template>
 
 <script>
-import NumberKeyboard from './NumberKeyboard'
+import NumberKeyboard from './keyboard/NumberKeyboard'
 export default {
-  name: 'ProductsList',
+  name: 'LoginForm',
   components: {
     NumberKeyboard,
   },
@@ -75,6 +76,9 @@ export default {
         this.toogleAdmin = true
         this.$store.dispatch('setIsAdmin', true)
         this.hide()
+      } else if (button === '{close}') {
+        this.hide()
+        this.toogleAdmin = false
       } else {
         this.toogleAdmin = false
       }
@@ -92,4 +96,12 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.password-keyboard {
+  max-width: 850px;
+  font-size: 24px;
+  text-align: center;
+  width: 100%;
+  color: black;
+}
+</style>

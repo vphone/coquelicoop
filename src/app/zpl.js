@@ -141,7 +141,7 @@ function getPricesLabels(unit, price, productWeight) {
       priceLabel = ('' + Math.round((price * productWeight) / 10) / 100).replace('.', ',') + '€'
     } else {
       priceLabel = ('' + price ).replace('.', ',') + '€'
-      priceKgLabel = ('' + Math.round((price * productWeight) / 10) / 100).replace('.', ',') + '€/Kg'
+      priceKgLabel = ('' + (Math.round((price * 1000) / productWeight)).toFixed(2)).replace('.', ',') + '€/Kg'
     }
   }
   return {priceLabel, priceKgLabel}

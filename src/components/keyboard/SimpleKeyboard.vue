@@ -52,7 +52,6 @@ export default {
 
       if (button === '{numbers}' || button === '{abc}') this.handleNumbers()
     },
-
     handleNumbers() {
       let currentLayout = this.keyboard.options.layoutName
       let numbersToggle = currentLayout !== 'numbers' ? 'numbers' : 'default'

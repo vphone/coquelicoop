@@ -1,13 +1,18 @@
 <template>
-  <div class="q-pa-md select-type-barcode">
-    <div class="text-h6 q-pa-lg title">
+  <div class="select-type-barcode q-pa-md">
+    <div class="text-h6 title">
       Sélectionner le type de code barre<br />que vous souhaitez imprimer
     </div>
-
-    <div class="q-gutter-md">
-      <q-select filled v-model="model" :options="options" emit-value @update:model-value="onUpdateValue" label="type code barre" />
-    </div>
-    <div>
+    <div class="form">
+      <q-select
+        filled
+        v-model="model"
+        :options="options"
+        emit-value
+        @update:model-value="onUpdateValue"
+        label="type code barre"
+        label-color="white"
+      />
       <q-input
         filled
         type="text"
@@ -16,6 +21,7 @@
         class="input text-h5 col"
         v-model="weight"
         label="Poids en g"
+        label-color="white"
         required
         minlength="1"
         placeholder="poids"
@@ -29,6 +35,7 @@
         class="input text-h5 col"
         v-model="number"
         label="Nombres d'étiquettes à imprimer"
+        label-color="white"
         required
         minlength="1"
         placeholder="nombres"
@@ -37,6 +44,7 @@
     </div>
     <q-dialog ref="dialogKeyboard" @hide="onDialogHide" class="">
       <q-card class="q-dialog-plugin">
+        <div class="text-h6 q-px-md q-py-sm">{{ title }}</div>
         <q-input
           filled
           type="text"
@@ -54,13 +62,13 @@
 </template>
 
 <script>
-import NumberKeyboard from './NumberKeyboard'
+import NumberKeyboard from './keyboard/NumberKeyboard'
 const WEIGHT_SELECT = 'Au poids'
 const PRICE_SELECT = 'Au prix'
 const WEIGHT_BUTTON = 'WEIGHT_BUTTON'
 const NUMBER_BUTTON = 'NUMBER_BUTTON'
 export default {
-  name: 'SelectTypeBarcode',
+  name: 'TypeBarcodeForm',
   components: {
     NumberKeyboard,
   },
@@ -78,11 +86,22 @@ export default {
           value: PRICE_SELECT,
         },
       ],
-      number: 0,
-      weight: 0,
       text: null,
       inputName: null,
     }
+  },
+  computed: {
+    weight() {
+      return this.$store.state.admin.weight
+    },
+    number() {
+      return this.$store.state.admin.number
+    },
+    title() {
+      return this.inputName === WEIGHT_BUTTON
+        ? `Saissez le poids en gramme`
+        : `Saisissez le nombre d'étiquette à imprimer`
+    },
   },
   emits: ['hide', 'defineWeight'],
   methods: {
@@ -102,15 +121,15 @@ export default {
       if (button === '{ent}' && this.inputName && this.text) {
         switch (this.inputName) {
           case WEIGHT_BUTTON:
-            this.weight = this.text
-            this.$store.dispatch('setAdminWeight', this.weight)
+            this.$store.dispatch('setAdminWeight', this.text)
             break
           case NUMBER_BUTTON:
-            this.number = this.text
-            this.$store.dispatch('setAdminNumber', this.number)
+            this.$store.dispatch('setAdminNumber', this.text)
             break
         }
         this.text = null
+        this.hide()
+      } else if (button === '{close}') {
         this.hide()
       }
     },
@@ -122,12 +141,10 @@ export default {
       this.inputName = NUMBER_BUTTON
       this.show()
     },
-    onUpdateValue(value){
+    onUpdateValue(value) {
       this.$store.dispatch('setAdminType', value)
-    }
+    },
   },
 }
 </script>
-<style>
-
-</style>
+<style scoped></style>
