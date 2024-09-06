@@ -79,7 +79,7 @@ export default {
     resetWeights() {
       this.$store.dispatch('setTotalWeight', 0)
       this.$store.dispatch('setProductWeight', 0)
-      this.$store.dispatch('setJarWeight', 0)
+      this.$store.dispatch('setPackagingWeight', 0)
     },
   },
   async mounted() {

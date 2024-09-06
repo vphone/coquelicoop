@@ -45,21 +45,16 @@ async function print(p, impr) {
       // pour tester en l'absence d'imprimante
       cmd = `COPY "${p}" "C:\\tmp\\barcodelabel.zpl"`
     }
-  } else if (process.platform === 'linux') {
+  } else  {
     if (impr) {
-      cmd = `lpr -l -P "${impr}" "${p}"`
+      //cmd = `lpr -l -P "${impr}" "${p}"`
+      cmd = `lpr -P "${impr}" "${p}"`
+      console.log(cmd)
     } else {
       // pour tester en l'absence d'imprimante
       cmd = `cp "${p}" "/tmp/barcodelabel.zpl"`
     }
-  } else if (process.platform === 'darwin') {
-    if (impr) {
-      cmd = `lp "${impr}" "${p}"`
-    } else {
-      // pour tester en l'absence d'imprimante
-      cmd = `cp "${p}" "/tmp/barcodelabel.zpl"`
-    }
-  }
+  } 
 
   const { stdout, stderr } = await exec(cmd)
   if (stderr) {
@@ -75,7 +70,7 @@ async function print(p, impr) {
 Demande d'impression d'une étiquette
 item : l'article lui-même
 totalWeight : c'est soit le poids, soit le nombre de pièces
-jarWeight : poids du contenant
+packagingWeight : poids du contenant
 Le rouleau de papier est centré au milieuu de l'imprimante :
 si on écrit depuis 0 en x, on va écrire hors du rouleau à gauche dès qu'il n'a pas la taille maximale.
 La "marge à gauche" est laissée paramétrable pour s'adapter à la largeur exacte du papier
@@ -85,9 +80,9 @@ export async function generateBarcodeLabel( item, ean) {
   console.log( item, ean)
   try {
     const margin = 20
-    const productWeight = item.jarWeight ? item.totalWeight - item.jarWeight : item.totalWeight
-    const {type, weightLabel} = getWeightsLabels(item.unite, item.jarWeight, productWeight, item.totalWeight)
-    const {priceLabel, priceKgLabel} = getPricesLabels(item.unite, item.price, productWeight)
+    // const productWeight = item.packagingWeight ? item.totalWeight - item.packagingWeight : item.totalWeight
+    const {type, weightLabel} = getWeightsLabels(item.unite, item.packagingWeight, item.productWeight, item.totalWeight)
+    const {priceLabel, priceKgLabel} = getPricesLabels(item.unite, item.price, item.productWeight)
 
     const options = { year: '2-digit', month: '2-digit', day: '2-digit' }
     const date = new Date().toLocaleDateString('fr-FR', options).replace(/\./g, '/')
@@ -106,8 +101,10 @@ export async function generateBarcodeLabel( item, ean) {
     },100,0^FD${date}^FS\n^FO${margin + 70},140^BY3,2,20^BEN,60,Y,N^FD${ean}^FS\n^XZ\n`
 
     // path du fichier à impimer
-    const dir = path.normalize('./src/app/')
-    let p = path.join(dir, 'barcodelabel.zpl')
+    const d = require('os').homedir() + process.env.VUE_APP_PATH
+    const dir = path.normalize(d)
+    //const p = path.join(dir, 'barcodelabel.zpl')
+    const p = path.join(dir, 'barcodelabel.txt')
     // écriture du texte en ZPL sur ce fichier
     await write(p, text)
     // envoi à l'imprimante selon l'OS
@@ -117,13 +114,13 @@ export async function generateBarcodeLabel( item, ean) {
     throw new Error(err)
   }
 }
-function getWeightsLabels(unit, jarWeight, productWeight, totalWeight){
+function getWeightsLabels(unit, packagingWeight, productWeight, totalWeight){
   let type
   let weightLabel
   if (unit === 'kg') {
     type = 'Poids net'
-    if (jarWeight) type += '+Tare'
-    weightLabel = formatPoids(productWeight) + (jarWeight ? '+' + formatPoids(jarWeight) : '')
+    if (packagingWeight) type += '+ Tare'
+    weightLabel = formatPoids(productWeight) + (packagingWeight ? '+' + formatPoids(packagingWeight) : '')
   } else {
     type = 'Poids SAISI'
     weightLabel = totalWeight

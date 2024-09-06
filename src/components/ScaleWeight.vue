@@ -16,7 +16,7 @@
             id="weight"
             name="weight"
             class="input text-h6 col"
-            v-model="jarWeight"
+            v-model="packagingWeight"
             required
             minlength="1"
             placeholder=""
@@ -40,8 +40,9 @@
         </q-item-section>
       </q-item>
     </q-list>
-    <SelectJar
+    <SelectPackaging
       :display-dialog="displayDialog"
+      :weight="weight"
       @define-weight="defineWeight"
       @hide="displayDialog = false"
     />
@@ -50,17 +51,17 @@
 
 <script>
 import { Scale } from '../app/scaleSerialPort'
-import SelectJar from './SelectJar.vue'
+import SelectPackaging from './SelectPackaging.vue'
 
 export default {
   name: 'ScaleWeight',
-  components: { SelectJar },
+  components: { SelectPackaging },
   computed: {
     productWeight() {
       return this.$store.state.weights.product
     },
-    jarWeight() {
-      return this.$store.state.weights.jar
+    packagingWeight() {
+      return this.$store.state.weights.packaging
     },
     totalWeight() {
       return this.$store.state.weights.total
@@ -79,15 +80,19 @@ export default {
     try {
       this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)
       await this.connectScale()
-      // await this.disconnectScale()
+      //await this.disconnectScale()
+      //this.resetWeights()
       // this.displayDialog = true
     } catch (err) {
       console.log(err)
     }
   },
+  async destroyed() {
+    this.resetWeights()
+    await this.disconnectScale()
+  },
   methods: {
     async disconnectScale() {
-      this.resetWeights()
       await this.scale.finEcoute()
     },
     async connectScale() {
@@ -107,7 +112,7 @@ export default {
     resetWeights() {
       this.$store.dispatch('setTotalWeight', 0)
       this.$store.dispatch('setProductWeight', 0)
-      this.$store.dispatch('setJarWeight', 0)
+      this.$store.dispatch('setPackagingWeight', 0)
     },
     displayErrorMessage(err) {
       this.$q.notify.setDefaults({
@@ -124,10 +129,18 @@ export default {
     defineWeight(value) {
       this.displayDialog = false
       if (value === 'ALL') {
-        this.$store.dispatch('setProductWeight', this.weight - this.jarWeight)
+        this.$store.dispatch('setProductWeight', this.weight - this.packagingWeight)
         this.$store.dispatch('setTotalWeight', this.weight)
+      } else if (value === '-10') {
+        this.$store.dispatch('setProductWeight', this.weight - 10)
+        this.$store.dispatch('setTotalWeight', this.weight)
+        this.$store.dispatch('setPackagingWeight', 10)
+      } else if (value === '-5') {
+        this.$store.dispatch('setProductWeight', this.weight - 5)
+        this.$store.dispatch('setTotalWeight', this.weight)
+        this.$store.dispatch('setPackagingWeight', 2)
       } else {
-        this.$store.dispatch('setJarWeight', this.weight)
+        this.$store.dispatch('setPackagingWeight', this.weight)
       }
     },
   },

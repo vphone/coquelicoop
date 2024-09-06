@@ -7,13 +7,16 @@ module.exports = defineConfig({
       rtlSupport: false,
     },
     electronBuilder: {
+      build: {
+        appId: 'balance',
+      },
       builderOptions: {
-        mac: {
-          icon: './scale.icns',
-        },
-        linux: {
-          icon: './scale.ico',
-        },
+        //   mac: {
+        //     icon: './scale.icns',
+        //   },
+        //   linux: {
+        //     icon: './scale.ico',
+        //   },
       },
       nodeIntegration: true,
       externals: ['serialport'],

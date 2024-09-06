@@ -10,19 +10,10 @@ export async function getProducts(keyword) {
   })
   const raw = await response.json()
   const products = raw.filter((item) => item.status === '1')
-  return await Promise.all(
-    products.map(async (item) => {
-      const { label, barcode, price_ttc, id, ref } = item
-      const image = await getImage(id)
-      const priceSplitted = price_ttc.split('.')
-      const price =
-        priceSplitted[0] + '.' + priceSplitted[1].split('')[0] + priceSplitted[1].split('')[1]
-      return { label, barcode, price, id, image, ref }
-    }),
-  )
+  return transformProduct(products)
 }
 
-import data from '../mocks/vracs.json'
+import mocksData from '../mocks/vracs.json'
 
 export async function getBulkProducts() {
   let raw
@@ -33,7 +24,7 @@ export async function getBulkProducts() {
     })
     raw = await response.json()
   } else {
-    raw = data
+    raw = mocksData
   }
   const products = raw.filter((item) => item.status === '1')
   products.sort((a, b) => {
@@ -45,10 +36,13 @@ export async function getBulkProducts() {
     if (nameA > nameB) {
       return 1
     }
-
     // names must be equal
     return 0
   })
+  return transformProduct(products)
+}
+
+async function transformProduct(products) {
   return await Promise.all(
     products.map(async (item) => {
       const { label, barcode, price_ttc, id, ref } = item

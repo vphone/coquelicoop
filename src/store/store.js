@@ -7,7 +7,7 @@ export const store = new Vuex.Store({
     keyword: '',
     isBulk: true,
     weights: {
-      jar: 0,
+      packaging: 0,
       product: 0,
       total: 0
     },
@@ -28,8 +28,8 @@ export const store = new Vuex.Store({
     setBulk(state, value) {
       state.isBulk = value
     },
-    setJarWeight(state, value) {
-      state.weights.jar = value
+    setPackagingWeight(state, value) {
+      state.weights.packaging = value
     },
     setProductWeight(state, value) {
       state.weights.product = value
@@ -80,8 +80,8 @@ export const store = new Vuex.Store({
     setProductWeight({ commit }, weight) {
       commit('setProductWeight', weight)
     },
-    setJarWeight({ commit }, weight) {
-      commit('setJarWeight', weight)
+    setPackagingWeight({ commit }, weight) {
+      commit('setPackagingWeight', weight)
     },
     setTotalWeight({ commit }, weight) {
       commit('setTotalWeight', weight)

@@ -18,7 +18,7 @@ import { createWeightBarcode, createPriceBarcode } from '../app/utils'
 import { generateBarcodeLabel } from '../app/zpl'
 
 const WEIGHT_SELECT = 'Au poids'
-// const PRICE_SELECT = 'PRICE_SELECT'
+const PRICE_SELECT = 'Au prix'
 export default {
   name: 'ProductItem',
   props: {
@@ -41,8 +41,8 @@ export default {
     totalWeight() {
       return this.$store.state.weights.total
     },
-    jarWeight() {
-      return this.$store.state.weights.jar
+    packagingWeight() {
+      return this.$store.state.weights.packaging
     },
     adminWeight() {
       return this.$store.state.admin.weight
@@ -56,9 +56,9 @@ export default {
   },
   methods: {
     generateBarcode() {
-      if (this.adminType === WEIGHT_SELECT)
-        return createWeightBarcode(this.product.ref, this.productWeight)
-      else return createPriceBarcode(this.product.ref, this.product.price)
+      if (this.adminType === PRICE_SELECT)
+      return createPriceBarcode(this.product.ref, this.product.price)
+      return createWeightBarcode(this.product.ref, this.productWeight)
     },
     generateBarcodeImage(code) {
       if (!this.canvas) this.canvas = document.createElement('canvas')
@@ -138,7 +138,7 @@ export default {
     resetWeights() {
       this.$store.dispatch('setTotalWeight', 0)
       this.$store.dispatch('setProductWeight', 0)
-      this.$store.dispatch('setJarWeight', 0)
+      this.$store.dispatch('setPackagingWeight', 0)
     },
     checkData() {
       let hasError = false
@@ -162,7 +162,7 @@ export default {
         this.displayErrorMessage()
         hasError = true
       }
-      if (this.totalWeight === this.jarWeight) {
+      if (this.totalWeight === this.packagingWeight) {
         this.displayErrorMessage('Le poids du contenant et brut sont identiques')
         hasError = true
       }
@@ -190,7 +190,8 @@ export default {
           unite: 'kg',
           price: this.product.price,
           totalWeight: this.totalWeight,
-          jarWeight: this.jarWeight,
+          packagingWeight: this.packagingWeight,
+          productWeight: this.productWeight
         }
       } else {
         // etiquette au prix
