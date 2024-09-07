@@ -87,7 +87,7 @@ export default {
       console.log(err)
     }
   },
-  async destroyed() {
+  async unmounted() {
     this.resetWeights()
     await this.disconnectScale()
   },
