@@ -1,8 +1,8 @@
 {
-  "name": "coquelicoop-scales",
+  "name": "coquelicoop",
   "version": "0.1.0",
   "author": "Veronique Phone <veronique.phone@gmail.com> (https://github.com/vphone/coquelicoop)",
-  "description": "Balance Coqueli'coop",
+  "description": "Balance et étiquettes Coqueli'coop",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

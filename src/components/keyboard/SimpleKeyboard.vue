@@ -72,8 +72,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .simple-keyboard {
-  max-width: 850px;
-  font-size: 24px;
+  max-width: 800px;
+  font-size: 20px;
   text-align: center;
   width: 100%;
   color: black;

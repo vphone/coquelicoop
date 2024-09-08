@@ -13,7 +13,7 @@ export const store = new Vuex.Store({
     },
     admin: {
       status: false,
-      number: 0,
+      number: 1,
       weight: 0,
       type: null
     }

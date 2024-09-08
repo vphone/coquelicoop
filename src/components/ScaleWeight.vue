@@ -1,51 +1,29 @@
 <template>
-  <div class="weights">
-    <q-list bordered separator>
-      <q-item class="row">
-        <q-item-section class="text-h6 col-8"> Poids du produit :</q-item-section>
-        <q-item-section class="text-h6 text-right row">
-          {{ productWeight }}
-        </q-item-section>
-      </q-item>
-      <q-item class="row">
-        <q-item-section class="text-h6 col-8">Poids du contenant :</q-item-section>
-        <q-item-section class="text-h6 text-right">
-          <q-input
-            filled
-            type="text"
-            id="weight"
-            name="weight"
-            class="input text-h6 col"
-            v-model="packagingWeight"
-            required
-            minlength="1"
-            placeholder=""
-          />
-        </q-item-section>
-      </q-item>
-      <q-item class="row">
-        <q-item-section class="text-h6 col-8"> Poids du brut :</q-item-section>
-        <q-item-section class="text-h6 text-right row">
-          <q-input
-            filled
-            type="text"
-            id="weight"
-            name="weight"
-            class="input text-h6 col"
-            v-model="totalWeight"
-            required
-            minlength="1"
-            placeholder=""
-          />
-        </q-item-section>
-      </q-item>
-    </q-list>
-    <SelectPackaging
-      :display-dialog="displayDialog"
-      :weight="weight"
-      @define-weight="defineWeight"
-      @hide="displayDialog = false"
-    />
+  <div class="weights q-my-sm">
+    <div class="container">
+      <div class="row">
+        <div class="col-6 q-pa-sm weights_packaging">
+          <div class="text-body1 text-center">Poids du contenant :</div>
+          <div class="text-h6 text-center">
+            {{ packagingWeight }} g
+          </div>
+        </div>
+        <div class="col-6 q-pa-sm weights_product">
+          <div class="text-body1 text-center"> Poids du produit :</div>
+          <div class="text-h6 text-center">
+            {{ productWeight }} g
+          </div>
+        </div>
+      </div>
+      <div class="weights_total q-pa-sm text-body1 text-center">
+        <div class="text-body1 text-center"> Poids du brut :</div>
+          <div class="text-h6 text-center">
+            {{ totalWeight }} g
+          </div>
+      </div>
+    </div>
+    <SelectPackaging :display-dialog="displayDialog" :weight="weight" @define-weight="defineWeight"
+      @hide="displayDialog = false" />
   </div>
 </template>
 
@@ -80,7 +58,7 @@ export default {
     try {
       this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)
       await this.connectScale()
-      //await this.disconnectScale()
+      // await this.disconnectScale()
       //this.resetWeights()
       // this.displayDialog = true
     } catch (err) {
@@ -123,7 +101,7 @@ export default {
       this.$q.notify({
         message: err,
         color: 'primary',
-        actions: [{ icon: 'close', color: 'white', round: true, handler: () => {} }],
+        actions: [{ icon: 'close', color: 'white', round: true, handler: () => { } }],
       })
     },
     defineWeight(value) {
@@ -149,10 +127,24 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-.weights .q-list--bordered {
+.weights {
+  background-color: #7294a1;
+}
+
+.weights .div--bordered {
   border: none;
 }
+
 .weights .q-field__native {
   color: white;
+}
+.weights_packaging {
+
+}
+.weights_product {
+  border-left: solid 1px black;
+}
+.weights_total {
+border-top: solid 1px black;
 }
 </style>

@@ -58,7 +58,7 @@ export default {
 <style scoped>
 .number-keyboard {
   max-width: 850px;
-  font-size: 24px;
+  font-size: 20px;
   text-align: center;
   width: 100%;
   color: black;

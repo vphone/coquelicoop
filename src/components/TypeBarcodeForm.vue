@@ -1,5 +1,5 @@
 <template>
-  <div class="select-type-barcode q-pa-md">
+  <div class="select-type-barcode">
     <div class="text-h6 title">
       Sélectionner le type de code barre<br />que vous souhaitez imprimer
     </div>
@@ -16,20 +16,6 @@
       <q-input
         filled
         type="text"
-        id="weight"
-        name="weight"
-        class="input text-h5 col"
-        v-model="weight"
-        label="Poids en g"
-        label-color="white"
-        required
-        minlength="1"
-        placeholder="poids"
-        @click="onClickWeight()"
-      />
-      <q-input
-        filled
-        type="text"
         id="number"
         name="number"
         class="input text-h5 col"
@@ -40,6 +26,21 @@
         minlength="1"
         placeholder="nombres"
         @click="onClickUnit()"
+      />
+      <q-input
+      v-if="isWeightSelected"
+        filled
+        type="text"
+        id="weight"
+        name="weight"
+        class="input text-h5 col"
+        v-model="weight"
+        label="Poids en g"
+        label-color="white"
+        required
+        minlength="1"
+        placeholder="poids"
+        @click="onClickWeight()"
       />
     </div>
     <q-dialog ref="dialogKeyboard" @hide="onDialogHide" class="">
@@ -65,6 +66,7 @@
 import NumberKeyboard from './keyboard/NumberKeyboard'
 const WEIGHT_SELECT = 'Au poids'
 const PRICE_SELECT = 'Au prix'
+const ORIGIN_SELECT = 'code barre d\'origine'
 const WEIGHT_BUTTON = 'WEIGHT_BUTTON'
 const NUMBER_BUTTON = 'NUMBER_BUTTON'
 export default {
@@ -85,12 +87,19 @@ export default {
           label: PRICE_SELECT,
           value: PRICE_SELECT,
         },
+        {
+          label: ORIGIN_SELECT,
+          value: ORIGIN_SELECT,
+        },
       ],
       text: null,
       inputName: null,
     }
   },
   computed: {
+    isWeightSelected(){
+      return this.$store.state.admin.type === WEIGHT_SELECT
+    },
     weight() {
       return this.$store.state.admin.weight
     },

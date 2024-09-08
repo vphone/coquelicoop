@@ -9,7 +9,7 @@
         />
         <PasswordForm class="col-2" />
       </div>
-      <div v-if="!isAdmin" class="column col-4 q-pa-md">
+      <div v-if="!isAdmin" class="menu2 col-4 q-pa-md">
         <q-btn
           class="text-h6 col-2"
           color="white"
@@ -19,14 +19,14 @@
         />
         <ScaleWeight class="col-8" />
         <q-btn
-          class="text-h5 col-2"
+          class="text-h6 col-2"
           color="white"
           text-color="black"
           label="Effacer"
           @click="resetWeights"
         />
       </div>
-      <div v-else>
+      <div v-else class="menu2 col-4 q-pa-md">
         <TypeBarcodeForm />
       </div>
       <div class="col-6 q-pa-md">
@@ -100,6 +100,9 @@ body {
   background-color: white;
   color: black;
 }
+.menu2 {
+
+}
 .q-layout__section--marginal.admin {
   background-color: var(--q-primary);
   color: #fff;
@@ -107,5 +110,8 @@ body {
 .q-layout__section--marginal.user {
   background-color: #607d8b !important;
   color: black !important;
+}
+i.q-icon {
+  display: none;
 }
 </style>

@@ -4,30 +4,15 @@
     <q-dialog ref="dialogKeyboard" @hide="onDialogHide" class="">
       <q-card class="q-dialog-plugin">
         <div class="text-h6 q-px-md q-py-sm">Saissez le code pour accéder à l'espace admin</div>
-        <q-input
-          filled
-          :type="isPassword ? 'password' : 'text'"
-          id="password"
-          name="password"
-          class="input text-h5 col"
-          v-model="password"
-          required
-          minlength="1"
-        >
+        <q-input filled :type="isPassword ? 'password' : 'text'" id="password" name="password" class="input text-h5 col"
+          v-model="password" required minlength="1">
           <template v-slot:append>
-            <q-icon
-              :name="isPassword ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="isPassword = !isPassword"
-            />
+            <q-icon :name="isPassword ? 'visibility_off' : 'visibility'" class="cursor-pointer"
+              @click="isPassword = !isPassword" />
           </template>
         </q-input>
-        <NumberKeyboard
-          keyboardClass="password-keyboard"
-          @onChange="onChange"
-          @onKeyPress="onKeyPress"
-          :input="password"
-        />
+        <NumberKeyboard keyboardClass="password-keyboard" @onChange="onChange" @onKeyPress="onKeyPress"
+          :input="password" />
       </q-card>
     </q-dialog>
   </div>
@@ -76,7 +61,20 @@ export default {
         this.toogleAdmin = true
         this.$store.dispatch('setIsAdmin', true)
         this.hide()
-      } else if (button === '{close}') {
+      }
+      else if (button === '{ent}' && this.password !== process.env.VUE_APP_ADMIN_PASSWORD) {
+        this.$q.notify.setDefaults({
+          position: 'top',
+          timeout: 9000,
+          textColor: 'white',
+        })
+        this.$q.notify({
+          message: 'Error de mot de passe incorrect',
+          color: 'primary',
+          actions: [{ icon: 'close', color: 'white', round: true, handler: () => { } }],
+        })
+      }
+      else if (button === '{close}') {
         this.hide()
         this.toogleAdmin = false
       } else {

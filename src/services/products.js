@@ -28,15 +28,14 @@ export async function getBulkProducts() {
   }
   const products = raw.filter((item) => item.status === '1')
   products.sort((a, b) => {
-    const nameA = a.label.toUpperCase() // ignore upper and lowercase
-    const nameB = b.label.toUpperCase() // ignore upper and lowercase
+    const nameA = a.label.toUpperCase()
+    const nameB = b.label.toUpperCase()
     if (nameA < nameB) {
       return -1
     }
     if (nameA > nameB) {
       return 1
     }
-    // names must be equal
     return 0
   })
   return transformProduct(products)

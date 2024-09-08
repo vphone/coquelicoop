@@ -11,12 +11,12 @@ module.exports = defineConfig({
         appId: 'balance',
       },
       builderOptions: {
-        //   mac: {
-        //     icon: './scale.icns',
-        //   },
-        //   linux: {
-        //     icon: './scale.ico',
-        //   },
+        mac: {
+          icon: './scale.icns',
+        },
+        linux: {
+          category: 'Utility'
+        }
       },
       nodeIntegration: true,
       externals: ['serialport'],

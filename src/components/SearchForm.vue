@@ -1,12 +1,12 @@
 <template>
   <div class="search column">
-    <label for="keyword" class="text-subtitle1 col">Nom du produit </label>
+    <label for="keyword" class="text-body1 col">Nom du produit</label>
     <q-input
       filled
       type="text"
       id="keyword"
       name="keyword"
-      class="input text-h5 col"
+      class="input text-h6 col"
       v-model="keyword"
       required
       minlength="1"

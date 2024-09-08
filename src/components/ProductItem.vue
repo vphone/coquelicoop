@@ -4,7 +4,7 @@
       <q-img :src="product.image" :ratio="1" class="image" spinner-color="white">
         <div class="absolute-bottom text-body1 text-weight-bold">{{ product.price }} €</div>
       </q-img>
-      <q-card-section class="text-body1">
+      <q-card-section class="text-body2">
         {{ product.label }}
       </q-card-section>
     </q-card>
@@ -19,6 +19,8 @@ import { generateBarcodeLabel } from '../app/zpl'
 
 const WEIGHT_SELECT = 'Au poids'
 const PRICE_SELECT = 'Au prix'
+const ORIGIN_SELECT = 'code barre d\'origine'
+
 export default {
   name: 'ProductItem',
   props: {
@@ -36,10 +38,10 @@ export default {
       return this.$store.state.admin.status
     },
     productWeight() {
-      return this.$store.state.weights.product
+      return this.isAdmin ? this.adminWeight : this.$store.state.weights.product
     },
     totalWeight() {
-      return this.$store.state.weights.total
+      return this.isAdmin ? this.adminWeight : this.$store.state.weights.total
     },
     packagingWeight() {
       return this.$store.state.weights.packaging
@@ -56,8 +58,10 @@ export default {
   },
   methods: {
     generateBarcode() {
+      if(this.adminType === ORIGIN_SELECT)
+      return this.product.barcode
       if (this.adminType === PRICE_SELECT)
-      return createPriceBarcode(this.product.ref, this.product.price)
+        return createPriceBarcode(this.product.ref, this.product.price)
       return createWeightBarcode(this.product.ref, this.productWeight)
     },
     generateBarcodeImage(code) {
@@ -131,8 +135,7 @@ export default {
       }
     },
     resetSelections() {
-      this.$store.dispatch('setAdminType', null)
-      this.$store.dispatch('setAdminNumber', 0)
+      this.$store.dispatch('setAdminNumber', 1)
       this.$store.dispatch('setAdminWeight', 0)
     },
     resetWeights() {
@@ -151,7 +154,7 @@ export default {
         hasError = true
       }
       if (this.adminType === null) {
-        this.displayErrorMessage("Veuillez indiquer au poids ou à l'unité")
+        this.displayErrorMessage("Veuillez indiquer le type de l'étiquette au poids ou au prix")
         hasError = true
       }
       return hasError
@@ -177,32 +180,21 @@ export default {
       this.$q.notify({
         message: err || `Veuillez poser votre produit sur la balance`,
         color: 'primary',
-        actions: [{ icon: 'close', color: 'white', round: true, handler: () => {} }],
+        actions: [{ icon: 'close', color: 'white', round: true, handler: () => { } }],
       })
     },
     getItem() {
-      let item
-      // etiquette au poids
-      if (this.adminType === WEIGHT_SELECT || !this.isAdmin) {
-        item = {
-          label: this.product.label,
-          ref: this.product.ref,
-          unite: 'kg',
-          price: this.product.price,
-          totalWeight: this.totalWeight,
-          packagingWeight: this.packagingWeight,
-          productWeight: this.productWeight
-        }
-      } else {
-        // etiquette au prix
-        item = {
-          label: this.product.label,
-          ref: this.product.ref,
-          unite: '',
-          price: this.product.price,
-          totalWeight: this.adminWeight,
-        }
+      let item = {
+        label: this.product.label,
+        ref: this.product.ref,
+        price: this.product.price,
+        totalWeight: this.totalWeight,
+        packagingWeight: this.packagingWeight,
+        productWeight: this.productWeight
       }
+
+      item.unite = this.adminType === WEIGHT_SELECT || !this.isAdmin ? 'kg' : ''
+
       return item
     },
   },
@@ -212,9 +204,10 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 .product .q-card__section--vert,
-.product .q-img__content > div {
+.product .q-img__content>div {
   padding: 8px;
 }
+
 .product .image img {
   padding: 18px;
 }

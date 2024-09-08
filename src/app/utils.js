@@ -36,7 +36,7 @@ function transformWeight(weight) {
   return weightStr
 }
 function transformPrice(price) {
-  let priceStr = price.toString().replace('.','')
+  let priceStr = price.toString().replace('.', '')
   while (priceStr.length < 5) {
     priceStr = '0' + priceStr
   }
@@ -49,10 +49,17 @@ function transformSku(sku) {
   return sku
 }
 
-export function formatPoids (p) {
+export function formatPoids(p) {
   if (!p) return '0'
   if (p < 1000) {
     return `${p} g`
   }
   return `${p / 1000} Kg`
+}
+
+// return 08/09/24
+export function getDateNow() {
+  const options = { year: '2-digit', month: '2-digit', day: '2-digit' }
+  const date = new Date().toLocaleDateString('fr-FR', options).replace(/\./g, '/')
+  return date
 }

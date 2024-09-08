@@ -6,11 +6,13 @@ npm install
 ```
 
 ### Compiles and hot-reloads for development
+### unset NODE_OPTIONS
 ```
 npm run electron:serve
 ```
 
 ### Compiles and minifies for production
+### export NODE_OPTIONS=--openssl-legacy-provider
 ```
 npm run electron:build
 ```
