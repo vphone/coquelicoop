@@ -47,8 +47,8 @@ async function print(file, printer) {
     }
   } else {
     if (printer) {
-      //cmd = `lpr -l -P "${printer}" "${file}"`
-      cmd = `lpr -P "${printer}" "${file}"`
+      cmd = `lpr -l -P "${printer}" "${file}"`
+      // cmd = `lpr -P "${printer}" "${file}"`
     } else {
       // pour tester en l'absence d'imprimante
       cmd = `cp "${file}" "/tmp/barcodelabel.zpl"`
@@ -78,7 +78,7 @@ voire des imprimantes. 220 paraît une bonne approximation pour être centré
 export async function generateBarcodeLabel(item, ean) {
   console.log(item, ean)
   try {
-    const margin = 20
+    const margin = -210
     const { type, weightLabel } = getWeightsLabels(item.unite, item.packagingWeight, item.productWeight)
     const { priceLabel, priceKgLabel } = getPricesLabels(item.unite, item.price, item.productWeight)
 
