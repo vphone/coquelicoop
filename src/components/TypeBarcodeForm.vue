@@ -1,11 +1,12 @@
 <template>
   <div class="select-type-barcode">
-    <div class="text-h6 title">
-      Sélectionner le type de code barre<br />que vous souhaitez imprimer
+    <div class="text-h6 title q-mb-sm">
+      Sélectionner le type de code barre que vous souhaitez imprimer
     </div>
     <div class="form">
       <q-select
         filled
+        class="q-mb-sm"
         v-model="model"
         :options="options"
         emit-value
@@ -18,7 +19,7 @@
         type="text"
         id="number"
         name="number"
-        class="input text-h5 col"
+        class="input text-h5 col q-mb-sm"
         v-model="number"
         label="Nombres d'étiquettes à imprimer"
         label-color="white"
@@ -28,12 +29,12 @@
         @click="onClickUnit()"
       />
       <q-input
-      v-if="isWeightSelected"
+        v-if="isWeightSelected"
         filled
         type="text"
         id="weight"
         name="weight"
-        class="input text-h5 col"
+        class="input text-h5 col q-mb-sm"
         v-model="weight"
         label="Poids en g"
         label-color="white"
@@ -64,9 +65,10 @@
 
 <script>
 import NumberKeyboard from './keyboard/NumberKeyboard'
+import { Scale } from '../app/scaleSerialPort'
 const WEIGHT_SELECT = 'Au poids'
 const PRICE_SELECT = 'Au prix'
-const ORIGIN_SELECT = 'code barre d\'origine'
+const ORIGIN_SELECT = "code barre d'origine"
 const WEIGHT_BUTTON = 'WEIGHT_BUTTON'
 const NUMBER_BUTTON = 'NUMBER_BUTTON'
 export default {
@@ -77,7 +79,8 @@ export default {
   props: {},
   data() {
     return {
-      model: null,
+      scale: null,
+      model: WEIGHT_SELECT,
       options: [
         {
           label: WEIGHT_SELECT,
@@ -94,16 +97,18 @@ export default {
       ],
       text: null,
       inputName: null,
+      weight: 0,
+      number: 1,
     }
   },
   computed: {
-    isWeightSelected(){
+    isWeightSelected() {
       return this.$store.state.admin.type === WEIGHT_SELECT
     },
-    weight() {
+    adminWeight() {
       return this.$store.state.admin.weight
     },
-    number() {
+    adminNumber() {
       return this.$store.state.admin.number
     },
     title() {
@@ -112,8 +117,53 @@ export default {
         : `Saisissez le nombre d'étiquette à imprimer`
     },
   },
+  watch: {
+    adminWeight(value) {
+      this.weight = value
+    },
+    adminNumber(value) {
+      this.number = value
+    },
+  },
   emits: ['hide', 'defineWeight'],
+  async mounted() {
+    try {
+      this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)
+      await this.connectScale()
+      // await this.disconnectScale()
+      this.getWeight(true, false, 500)
+    } catch (err) {
+      console.log(err)
+    }
+  },
   methods: {
+    async disconnectScale() {
+      await this.scale.finEcoute()
+    },
+    async connectScale() {
+      await this.scale.debutEcoute()
+    },
+    getWeight(ecoute, err, weight) {
+      if (err) {
+        this.displayErrorMessage(err)
+      } else if (ecoute && weight > 0) {
+        this.ecouteBalance = ecoute
+        this.weight = weight
+        this.$store.dispatch('setAdminWeight', this.weight)
+      }
+    },
+    displayErrorMessage(err) {
+      this.$q.notify.setDefaults({
+        position: 'bottom',
+        timeout: 6000,
+        textColor: 'white',
+      })
+      this.$q.notify({
+        message: err,
+        color: 'primary',
+        actions: [{ icon: 'close', color: 'white', round: true, handler: () => {} }],
+      })
+    },
     show() {
       this.$refs.dialogKeyboard.show()
     },
@@ -131,9 +181,11 @@ export default {
         switch (this.inputName) {
           case WEIGHT_BUTTON:
             this.$store.dispatch('setAdminWeight', this.text)
+            this.weight = this.text
             break
           case NUMBER_BUTTON:
             this.$store.dispatch('setAdminNumber', this.text)
+            this.number = this.text
             break
         }
         this.text = null
@@ -156,4 +208,16 @@ export default {
   },
 }
 </script>
-<style scoped></style>
+<style>
+.select-type-barcode {
+  color: black;
+  background-color: #f46c62;
+  padding: 8px;
+}
+.field {
+  margin-bottom: 8px;
+}
+.q-field__label {
+  font-weight: bold;
+}
+</style>

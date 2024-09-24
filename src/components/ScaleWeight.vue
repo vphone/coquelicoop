@@ -4,26 +4,24 @@
       <div class="row">
         <div class="col-6 q-pa-sm weights_packaging">
           <div class="text-body1 text-center">Poids du contenant :</div>
-          <div class="text-h6 text-center">
-            {{ packagingWeight }} g
-          </div>
+          <div class="text-h6 text-center">{{ packagingWeight }} g</div>
         </div>
         <div class="col-6 q-pa-sm weights_product">
-          <div class="text-body1 text-center"> Poids du produit :</div>
-          <div class="text-h6 text-center">
-            {{ productWeight }} g
-          </div>
+          <div class="text-body1 text-center">Poids du produit :</div>
+          <div class="text-h6 text-center">{{ productWeight }} g</div>
         </div>
       </div>
       <div class="weights_total q-pa-sm text-body1 text-center">
-        <div class="text-body1 text-center"> Poids du brut :</div>
-          <div class="text-h6 text-center">
-            {{ totalWeight }} g
-          </div>
+        <div class="text-body1 text-center">Poids du brut :</div>
+        <div class="text-h6 text-center">{{ totalWeight }} g</div>
       </div>
     </div>
-    <SelectPackaging :display-dialog="displayDialog" :weight="weight" @define-weight="defineWeight"
-      @hide="displayDialog = false" />
+    <SelectPackaging
+      :display-dialog="displayDialog"
+      :weight="weight"
+      @define-weight="defineWeight"
+      @hide="displayDialog = false"
+    />
   </div>
 </template>
 
@@ -59,7 +57,7 @@ export default {
       this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)
       await this.connectScale()
       // await this.disconnectScale()
-      //this.resetWeights()
+      // this.resetWeights()
       // this.displayDialog = true
     } catch (err) {
       console.log(err)
@@ -101,7 +99,7 @@ export default {
       this.$q.notify({
         message: err,
         color: 'primary',
-        actions: [{ icon: 'close', color: 'white', round: true, handler: () => { } }],
+        actions: [{ icon: 'close', color: 'white', round: true, handler: () => {} }],
       })
     },
     defineWeight(value) {
@@ -113,10 +111,6 @@ export default {
         this.$store.dispatch('setProductWeight', this.weight - 10)
         this.$store.dispatch('setTotalWeight', this.weight)
         this.$store.dispatch('setPackagingWeight', 10)
-      } else if (value === '-5') {
-        this.$store.dispatch('setProductWeight', this.weight - 5)
-        this.$store.dispatch('setTotalWeight', this.weight)
-        this.$store.dispatch('setPackagingWeight', 2)
       } else {
         this.$store.dispatch('setPackagingWeight', this.weight)
       }
@@ -138,13 +132,12 @@ export default {
 .weights .q-field__native {
   color: white;
 }
-.weights_packaging {
 
-}
 .weights_product {
   border-left: solid 1px black;
 }
+
 .weights_total {
-border-top: solid 1px black;
+  border-top: solid 1px black;
 }
 </style>

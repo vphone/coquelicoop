@@ -6,7 +6,7 @@
       type="text"
       id="keyword"
       name="keyword"
-      class="input text-h6 col"
+      class="input text-h6 col q-mb-sm"
       v-model="keyword"
       required
       minlength="1"

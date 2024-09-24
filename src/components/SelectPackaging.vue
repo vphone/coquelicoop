@@ -15,9 +15,6 @@
         <q-btn class="col-4" color="white" text-color="black" label="Produit emballé (-10g)" @click="$emit('defineWeight', '-10')">
           <q-img src="../assets/plastic.png" class="empty"/>
         </q-btn>
-        <q-btn class="col-4 q-ml-lg" color="white" text-color="black" label="Sachet papier (-5g)" @click="$emit('defineWeight', '-5')">
-          <q-img src="../assets/paper.png" class="empty"/>
-        </q-btn>
       </div>
       <q-card-actions align="right">
         <q-btn color="primary" label="Annuler" @click="onCancelClick" />

@@ -19,7 +19,7 @@ import { generateBarcodeLabel } from '../app/zpl'
 
 const WEIGHT_SELECT = 'Au poids'
 const PRICE_SELECT = 'Au prix'
-const ORIGIN_SELECT = 'code barre d\'origine'
+const ORIGIN_SELECT = "code barre d'origine"
 
 export default {
   name: 'ProductItem',
@@ -58,8 +58,7 @@ export default {
   },
   methods: {
     generateBarcode() {
-      if(this.adminType === ORIGIN_SELECT)
-      return this.product.barcode
+      if (this.adminType === ORIGIN_SELECT) return this.product.barcode
       if (this.adminType === PRICE_SELECT)
         return createPriceBarcode(this.product.ref, this.product.price)
       return createWeightBarcode(this.product.ref, this.productWeight)
@@ -123,8 +122,8 @@ export default {
         const item = this.getItem()
         const code = this.generateBarcode()
         await generateBarcodeLabel(item, code)
-        if (this.isAdmin) this.resetSelections()
-        else this.resetWeights()
+        // if (this.isAdmin) this.resetSelections()
+        if (!this.isAdmin) this.resetWeights()
       } catch (err) {
         if (err === '99999') {
           this.errorMessage = `Le poids a été mal récupéré. Repeser le produit, l'enlever du plateau et recommencer`
@@ -180,7 +179,7 @@ export default {
       this.$q.notify({
         message: err || `Veuillez poser votre produit sur la balance`,
         color: 'primary',
-        actions: [{ icon: 'close', color: 'white', round: true, handler: () => { } }],
+        actions: [{ icon: 'close', color: 'white', round: true, handler: () => {} }],
       })
     },
     getItem() {
@@ -190,7 +189,7 @@ export default {
         price: this.product.price,
         totalWeight: this.totalWeight,
         packagingWeight: this.packagingWeight,
-        productWeight: this.productWeight
+        productWeight: this.productWeight,
       }
 
       item.unite = this.adminType === WEIGHT_SELECT || !this.isAdmin ? 'kg' : ''
@@ -204,7 +203,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 .product .q-card__section--vert,
-.product .q-img__content>div {
+.product .q-img__content > div {
   padding: 8px;
 }
 

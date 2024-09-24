@@ -73,7 +73,7 @@ export default {
 <style scoped>
 .simple-keyboard {
   max-width: 800px;
-  font-size: 20px;
+  font-size: 28px;
   text-align: center;
   width: 100%;
   color: black;
