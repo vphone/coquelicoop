@@ -44,7 +44,7 @@
         @click="onClickWeight()"
       />
     </div>
-    <q-dialog ref="dialogKeyboard" @hide="onDialogHide" class="">
+    <q-dialog ref="dialogKeyboard" @hide="onDialogHide">
       <q-card class="q-dialog-plugin">
         <div class="text-h6 q-px-md q-py-sm">{{ title }}</div>
         <q-input
@@ -76,7 +76,6 @@ export default {
   components: {
     NumberKeyboard,
   },
-  props: {},
   data() {
     return {
       scale: null,
@@ -103,7 +102,7 @@ export default {
   },
   computed: {
     isWeightSelected() {
-      return this.$store.state.admin.type === WEIGHT_SELECT
+      return this.model === WEIGHT_SELECT
     },
     adminWeight() {
       return this.$store.state.admin.weight
@@ -130,8 +129,6 @@ export default {
     try {
       this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)
       await this.connectScale()
-      // await this.disconnectScale()
-      this.getWeight(true, false, 500)
     } catch (err) {
       console.log(err)
     }

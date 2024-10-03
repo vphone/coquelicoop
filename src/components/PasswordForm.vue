@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-toggle v-model="toogleAdmin" label="Admin" @click="displayPasswordDialog" />
-    <q-dialog ref="dialogKeyboard" @hide="onDialogHide" class="">
+    <q-dialog ref="dialogKeyboard" @hide="onDialogHide">
       <q-card class="q-dialog-plugin">
         <div class="text-h6 q-px-md q-py-sm">Saissez le code pour accéder à l'espace admin</div>
         <q-input filled :type="isPassword ? 'password' : 'text'" id="password" name="password" class="input text-h5 col"

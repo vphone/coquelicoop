@@ -2,26 +2,29 @@
   <div class="weights q-my-sm">
     <div class="container">
       <div class="row">
-        <div class="col-6 q-pa-sm weights_packaging">
-          <div class="text-body1 text-center">Poids du contenant :</div>
-          <div class="text-h6 text-center">{{ packagingWeight }} g</div>
+        <div class="col-6 q-pa-xs weights_packaging">
+          <q-btn @click="setTypeWeight('PACKAGE')" :color="typeWeight === 'PACKAGE' ? 'blue-grey-8' : ''"
+            :text-color="typeWeight === 'PACKAGE' ? 'white' : 'black'">
+            <div class=" text-body1 text-center">Poids du contenant :
+            </div>
+            <div class="text-h6 text-center">{{ packagingWeight }} g</div>
+          </q-btn>
         </div>
         <div class="col-6 q-pa-sm weights_product">
           <div class="text-body1 text-center">Poids du produit :</div>
           <div class="text-h6 text-center">{{ productWeight }} g</div>
         </div>
       </div>
-      <div class="weights_total q-pa-sm text-body1 text-center">
-        <div class="text-body1 text-center">Poids du brut :</div>
-        <div class="text-h6 text-center">{{ totalWeight }} g</div>
+      <div class="weights_total q-pa-xs">
+        <q-btn class="fit" @click="setTypeWeight('ALL')" :color="typeWeight === 'ALL' ? 'blue-grey-8' : ''"
+        :text-color="typeWeight === 'ALL' ? 'white' : 'black'">
+          <div class="text-body1 text-left">Poids du brut : </div>
+          <div class="text-h6 text-right"> {{ totalWeight }} g</div>
+        </q-btn>
       </div>
     </div>
-    <SelectPackaging
-      :display-dialog="displayDialog"
-      :weight="weight"
-      @define-weight="defineWeight"
-      @hide="displayDialog = false"
-    />
+    <SelectPackaging :display-dialog="displayDialog" :weight="weight" @define-weight="defineWeight"
+      @hide="displayDialog = false" />
   </div>
 </template>
 
@@ -50,6 +53,7 @@ export default {
       displayDialog: false,
       weight: 0,
       timeout: null,
+      typeWeight: 'ALL'
     }
   },
   async mounted() {
@@ -82,7 +86,8 @@ export default {
       } else if (ecoute && weight > 0) {
         this.ecouteBalance = ecoute
         this.weight = weight
-        this.displayDialog = true
+        // this.displayDialog = true
+        this.defineWeight()
       }
     },
     resetWeights() {
@@ -99,15 +104,18 @@ export default {
       this.$q.notify({
         message: err,
         color: 'primary',
-        actions: [{ icon: 'close', color: 'white', round: true, handler: () => {} }],
+        actions: [{ icon: 'close', color: 'white', round: true, handler: () => { } }],
       })
     },
-    defineWeight(value) {
+    setTypeWeight(value) {
+      this.typeWeight = value
+    },
+    defineWeight() {
       this.displayDialog = false
-      if (value === 'ALL') {
+      if (this.typeWeight === 'ALL') {
         this.$store.dispatch('setProductWeight', this.weight - this.packagingWeight)
         this.$store.dispatch('setTotalWeight', this.weight)
-      } else if (value === '-10') {
+      } else if (this.typeWeight === '-10') {
         this.$store.dispatch('setProductWeight', this.weight - 10)
         this.$store.dispatch('setTotalWeight', this.weight)
         this.$store.dispatch('setPackagingWeight', 10)
@@ -139,5 +147,9 @@ export default {
 
 .weights_total {
   border-top: solid 1px black;
+}
+
+button.q-btn {
+  text-transform: none;
 }
 </style>
