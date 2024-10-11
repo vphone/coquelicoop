@@ -124,7 +124,7 @@ export default {
       this.number = value
     },
   },
-  emits: ['hide', 'defineWeight'],
+  emits: ['hide'],
   async mounted() {
     try {
       this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)

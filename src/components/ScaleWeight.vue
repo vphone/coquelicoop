@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-6 q-pa-xs weights_packaging">
-          <q-btn @click="setTypeWeight('PACKAGE')" :color="typeWeight === 'PACKAGE' ? 'blue-grey-8' : ''"
+          <q-btn @click="fillWeight" :color="typeWeight === 'PACKAGE' ? 'blue-grey-8' : ''"
             :text-color="typeWeight === 'PACKAGE' ? 'white' : 'black'">
             <div class=" text-body1 text-center">Poids du contenant :
             </div>
@@ -23,18 +23,32 @@
         </q-btn>
       </div>
     </div>
-    <SelectPackaging :display-dialog="displayDialog" :weight="weight" @define-weight="defineWeight"
-      @hide="displayDialog = false" />
+      <q-dialog ref="dialogKeyboard" @hide="onDialogHide">
+      <q-card class="q-dialog-plugin">
+        <div class="text-h6 q-px-md q-py-sm">Saisir le poids pour la tare ou [fermer] pour peser votre contenant</div>
+        <q-input
+          filled
+          type="text"
+          id="text"
+          name="text"
+          class="input text-h5 col"
+          v-model="text"
+          required
+          minlength="1"
+        />
+        <NumberKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="text" />
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script>
 import { Scale } from '../app/scaleSerialPort'
-import SelectPackaging from './SelectPackaging.vue'
+import NumberKeyboard from './keyboard/NumberKeyboard'
 
 export default {
   name: 'ScaleWeight',
-  components: { SelectPackaging },
+  components: { NumberKeyboard },
   computed: {
     productWeight() {
       return this.$store.state.weights.product
@@ -50,10 +64,10 @@ export default {
     return {
       scale: null,
       ecouteBalance: null,
-      displayDialog: false,
       weight: 0,
       timeout: null,
-      typeWeight: 'ALL'
+      typeWeight: 'ALL',
+      text: null
     }
   },
   async mounted() {
@@ -62,7 +76,6 @@ export default {
       await this.connectScale()
       // await this.disconnectScale()
       // this.resetWeights()
-      // this.displayDialog = true
     } catch (err) {
       console.log(err)
     }
@@ -81,12 +94,9 @@ export default {
     getWeight(ecoute, err, weight) {
       if (err) {
         this.displayErrorMessage(err)
-      } else if (weight === 0) {
-        this.displayDialog = false
       } else if (ecoute && weight > 0) {
         this.ecouteBalance = ecoute
         this.weight = weight
-        // this.displayDialog = true
         this.defineWeight()
       }
     },
@@ -111,7 +121,6 @@ export default {
       this.typeWeight = value
     },
     defineWeight() {
-      this.displayDialog = false
       if (this.typeWeight === 'ALL') {
         this.$store.dispatch('setProductWeight', this.weight - this.packagingWeight)
         this.$store.dispatch('setTotalWeight', this.weight)
@@ -123,6 +132,31 @@ export default {
         this.$store.dispatch('setPackagingWeight', this.weight)
       }
     },
+    show() {
+      this.$refs.dialogKeyboard.show()
+    },
+    hide() {
+      this.$refs.dialogKeyboard.hide()
+    },
+    onDialogHide() {
+      this.$emit('hide')
+    },
+    onChange(input) {
+      this.text = input
+    },
+    onKeyPress(button) {
+      if (button === '{ent}' && this.text) {
+        this.$store.dispatch('setPackagingWeight', Number.parseInt(this.text))
+        this.text = null
+        this.hide()
+      } else if (button === '{close}') {
+        this.hide()
+      }
+    },
+    fillWeight(){
+      this.show()
+      this.setTypeWeight('PACKAGE')
+    }
   },
 }
 </script>
