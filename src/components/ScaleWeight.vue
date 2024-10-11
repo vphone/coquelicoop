@@ -2,8 +2,15 @@
   <div class="weights q-my-sm">
     <div class="container">
       <div class="row">
-        <div class="col-6 q-pa-xs weights_packaging">
-          <q-btn @click="fillWeight" :color="typeWeight === 'PACKAGE' ? 'blue-grey-8' : ''"
+        <div class="row col-6 q-pa-xs weights_packaging">
+          <q-btn class="col-4" @click="fillWeight">
+            <q-img
+              src="../assets/modify.png"
+              spinner-color="white"
+              style="height: 30px; width:30px;"
+            />
+          </q-btn>
+          <q-btn class="col-8" @click="setTypeWeight('PACKAGE')" :color="typeWeight === 'PACKAGE' ? 'blue-grey-8' : ''"
             :text-color="typeWeight === 'PACKAGE' ? 'white' : 'black'">
             <div class=" text-body1 text-center">Poids du contenant :
             </div>
@@ -25,7 +32,7 @@
     </div>
       <q-dialog ref="dialogKeyboard" @hide="onDialogHide">
       <q-card class="q-dialog-plugin">
-        <div class="text-h6 q-px-md q-py-sm">Saisir le poids pour la tare ou [fermer] pour peser votre contenant</div>
+        <div class="text-h6 q-px-md q-py-sm">Saisir le poids pour la tare</div>
         <q-input
           filled
           type="text"
@@ -74,7 +81,7 @@ export default {
     try {
       this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)
       await this.connectScale()
-      // await this.disconnectScale()
+       await this.disconnectScale()
       // this.resetWeights()
     } catch (err) {
       console.log(err)
