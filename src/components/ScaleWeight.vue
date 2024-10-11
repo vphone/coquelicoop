@@ -81,7 +81,7 @@ export default {
     try {
       this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)
       await this.connectScale()
-       await this.disconnectScale()
+      // await this.disconnectScale()
       // this.resetWeights()
     } catch (err) {
       console.log(err)
