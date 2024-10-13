@@ -4,7 +4,8 @@ const headers = {
   DOLAPIKEY: process.env.VUE_APP_DOLAPIKEY,
 }
 export async function getProducts(keyword) {
-  const url = `${baseUrl}products?sortfield=t.label&sortorder=ASC&sqlfilters=t.label:like:'%${keyword}%'`
+  const encoded = encodeURIComponent(`t.label:like:%${keyword}%`)
+  const url = `${baseUrl}products?sortfield=t.label&sortorder=ASC&sqlfilters=${encoded}`
   const response = await fetch(url, {
     headers,
   })
