@@ -72,7 +72,6 @@ export default {
       scale: null,
       ecouteBalance: null,
       weight: 0,
-      timeout: null,
       typeWeight: 'ALL',
       text: null
     }
@@ -100,7 +99,7 @@ export default {
     },
     getWeight(ecoute, err, weight) {
       if (err) {
-        this.displayErrorMessage(err)
+        this.displayErrorMessage(`Un problème est survenu avec la balance. Veuillez refermer l'application et la réouvrir.`)
       } else if (ecoute && weight > 0) {
         this.ecouteBalance = ecoute
         this.weight = weight
@@ -112,18 +111,6 @@ export default {
       this.$store.dispatch('setProductWeight', 0)
       this.$store.dispatch('setPackagingWeight', 0)
     },
-    displayErrorMessage(err) {
-      this.$q.notify.setDefaults({
-        position: 'bottom',
-        timeout: 6000,
-        textColor: 'white',
-      })
-      this.$q.notify({
-        message: err,
-        color: 'primary',
-        actions: [{ icon: 'close', color: 'white', round: true, handler: () => { } }],
-      })
-    },
     setTypeWeight(value) {
       this.typeWeight = value
     },
@@ -131,10 +118,6 @@ export default {
       if (this.typeWeight === 'ALL') {
         this.$store.dispatch('setProductWeight', this.weight - this.packagingWeight)
         this.$store.dispatch('setTotalWeight', this.weight)
-      } else if (this.typeWeight === '-10') {
-        this.$store.dispatch('setProductWeight', this.weight - 10)
-        this.$store.dispatch('setTotalWeight', this.weight)
-        this.$store.dispatch('setPackagingWeight', 10)
       } else {
         this.$store.dispatch('setPackagingWeight', this.weight)
       }
@@ -163,7 +146,19 @@ export default {
     fillWeight(){
       this.show()
       this.setTypeWeight('PACKAGE')
-    }
+    },
+    displayErrorMessage(err) {
+      this.$q.notify.setDefaults({
+        position: 'bottom',
+        timeout: 6000,
+        textColor: 'white',
+      })
+      this.$q.notify({
+        message: err,
+        color: 'primary',
+        actions: [{ icon: 'close', color: 'white', round: true, handler: () => { } }],
+      })
+    },
   },
 }
 </script>

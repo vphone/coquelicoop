@@ -126,9 +126,11 @@ export default {
   },
   emits: ['hide'],
   async mounted() {
+    this.$store.dispatch('setAdminType', this.model)
     try {
       this.scale = new Scale(process.env.VUE_APP_SCALE, this.getWeight)
       await this.connectScale()
+      // await this.disconnectScale()
     } catch (err) {
       console.log(err)
     }
@@ -200,6 +202,7 @@ export default {
       this.show()
     },
     onUpdateValue(value) {
+      this.model = value
       this.$store.dispatch('setAdminType', value)
     },
   },

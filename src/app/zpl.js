@@ -48,7 +48,6 @@ async function print(file, printer) {
   } else {
     if (printer) {
       cmd = `lpr -l -P "${printer}" "${file}"`
-      // cmd = `lpr -P "${printer}" "${file}"`
     } else {
       // pour tester en l'absence d'imprimante
       cmd = `cp "${file}" "/tmp/barcodelabel.zpl"`
@@ -75,7 +74,7 @@ si on écrit depuis 0 en x, on va écrire hors du rouleau à gauche dès qu'il n
 La "marge à gauche" est laissée paramétrable pour s'adapter à la largeur exacte du papier
 voire des imprimantes. 220 paraît une bonne approximation pour être centré
 */
-export async function generateBarcodeLabel(item, ean) {
+export async function generateBarcodeLabel(item, ean, nbLabel = 1) {
   console.log(item, ean)
   try {
     const margin = -210
@@ -102,7 +101,10 @@ export async function generateBarcodeLabel(item, ean) {
     await write(p, text)
 
     // envoi à l'imprimante selon l'OS
-    return print(p, process.env.VUE_APP_PRINTER)
+    for(let i = 0; i < nbLabel; i++) {
+      await print(p, process.env.VUE_APP_PRINTER)
+    }
+    
   } catch (err) {
     console.log('ERR PRINT ZPL', err)
     throw new Error(err)

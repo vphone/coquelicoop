@@ -24,8 +24,8 @@ Malgré cela en test ça ne marche bien que la première fois. Quasar dev relanc
 const { SerialPort } = remote.require('serialport')
 const { DelimiterParser } = remote.require('@serialport/parser-delimiter')
 
-const delayWeightRequest = 1500 // en ms.
-const delayScaleOff = 2000 //
+const delayWeightRequest = 1500
+const delayScaleOff = 2000
 const delayListener = 5000
 const options = { lock: false, baudRate: 9600, autoOpen: false }
 const delimiteurFin = '\r\x03' // delimiter de fin de séquence de réception de poids
@@ -108,7 +108,6 @@ export class Scale {
     - on envoie "$" à la balance
     */
   _weightRequest() {
-    // PRIVATE
     /*
         Texte à envoyer à la balance: $
         Data reçue en réponse : STX 41 32 32 32 48 46 48 48 48 CR ETX
@@ -118,7 +117,6 @@ export class Scale {
         this._error(Error('La balance ' + this.identifierScale + ' ne répond plus'))
       }, delayScaleOff)
     }
-    // console.log('Demamde poids')
     this.port.write(requetePoids, (err) => {
       if (err) this._error(err)
     })
@@ -126,7 +124,6 @@ export class Scale {
 
   // Fermeture : par sécurité on flush mais on ignore les erreurs de flush / close
   async _flushAndClose() {
-    // PRIVATE
     if (!this.port || !this.port.isOpen) return
     try {
       await _flush(this.port, this.identifierScale)
@@ -144,7 +141,6 @@ export class Scale {
     - si on est en écoute, on tente de se reconnecter au bout de 3s
     */
   async _error(err) {
-    // PRIVATE
     if (!err || !err.message) err = Error('inconnu')
     this.clearTimer()
     const errText = 'Erreur sur ' + this.identifierScale + ' : ' + err.message
@@ -210,14 +206,12 @@ export class Scale {
   _onData(data) {
     this.clearTimer() // la balance a répondu, plus la peine de s'inquièter de sa non réponse
     const s = u8ToStr(data)
-    // console.log('<' + toDec(s) + '>') // juste une trace pour debug un peu confortable
     const p = Number.parseFloat(s.substring(2)) * 1000
     if (!isNaN(p)) {
       // normalement on doit recevoir un nombre décimal : 10.750 0.432 ...
       if (p !== this.weight) {
         // si la balance a répondu le même poids, l'appelant n'en a cure, ce qui l'intéresse sont les changements de poids
         this.weight = p
-        // console.log('< ' + p + ' >')
         this.callback(this.listener, null, this.weight)
       }
     } else {
