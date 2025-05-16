@@ -50,9 +50,9 @@ async function transformProduct(products) {
       if (process.env.VUE_APP_USE_MOCKS === 'false') {
         image = await getImage(id)
       }
-      const priceSplitted = price_ttc.split('.')
-      const price =
-        priceSplitted[0] + '.' + priceSplitted[1].split('')[0] + priceSplitted[1].split('')[1]
+
+      const price = Number.parseFloat(price_ttc).toFixed(2)
+
       return { label, barcode, price, id, ref, image }
     }),
   )
