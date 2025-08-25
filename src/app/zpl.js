@@ -86,10 +86,10 @@ export async function generateBarcodeLabel(item, ean) {
 
     // texte de l'étiquette en ZPL : format 50mm x 40mmm
     // eslint-disable-next-line no-eval
-    const text = `^XA\n^CI28\n^CF0,0,30\n^FO${margin + 10},12,0^FD${item.label}^FS\n^FO${margin + 10
-      },46,0^FD${item.ref}^FS\n^CF0,0,20\n^FO${margin + 10},80,0^FD${priceKgLabel}^FS\n^FO${margin + 120
-      },80,0^FD${type}^FS\n^FO${margin + 320},80,0^FDPesé le^FS\n^CF0,0,28\n^FO${margin + 10
-      },100,0^FD${priceLabel}^FS\n^FO${margin + 120},100,0^FD${weightLabel}^FS\n^CF0,0,20\n^FO${margin + 320
+    const text = `^XA\n^CI28\n^CF0,0,30\n^FO${margin + 50},12,0^FD${item.label}^FS\n^FO${margin + 50
+      },46,0^FD${item.ref}^FS\n^CF0,0,20\n^FO${margin + 50},80,0^FD${priceKgLabel}^FS\n^FO${margin + 170
+      },80,0^FD${type}^FS\n^FO${margin + 320},80,0^FDPesé le^FS\n^CF0,0,28\n^FO${margin + 50
+      },100,0^FD${priceLabel}^FS\n^FO${margin + 170},100,0^FD${weightLabel}^FS\n^CF0,0,20\n^FO${margin + 320
       },100,0^FD${date}^FS\n^FO${margin + 70},140^BY3,2,20^BEN,60,Y,N^FD${ean}^FS\n^XZ\n`
 
     // path du fichier à impimer
